@@ -1,19 +1,20 @@
 package models.word;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
+import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 
 public interface BeginWord {
-	@SqlUpdate("create table begin_word (word varchar(20));")
+	@SqlUpdate("create table beginword (word varchar(20));")
 	void createBeginWordTable();
 
-	@SqlUpdate("select count(*) from begin_word where word = (:word)")
+	@SqlQuery("select count(word) from beginword where word = (:word)")
 	int beginWordCount(@Bind("word") String word);
 
-	@SqlUpdate("insert into begin_word values(:word)")
+	@SqlUpdate("insert into beginword values(:word)")
 	void beginWordInsert(@Bind("word") String word);
 
-	@SqlUpdate("select * from begin_word order by random() limit 1")
+	@SqlQuery("select word from beginword order by random() limit 1")
 	String beginWordSelectByRandom();
 
 	void close();

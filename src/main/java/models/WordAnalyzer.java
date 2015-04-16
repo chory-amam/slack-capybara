@@ -1,32 +1,35 @@
 package models;
 
+import com.google.common.collect.Lists;
 import org.atilika.kuromoji.Token;
 import org.atilika.kuromoji.Tokenizer;
 
 import java.util.List;
 
 /**
- * kuromojiを使って解析するクラス
+ * kuromojiを使って解析したり
+ * 文言チェックしたり
  */
 public class WordAnalyzer {
 
 	// 入力した文字列を使って解析し、文言ごとにスペースで区切る
-	public static String analyze(final String sentence) {
+	public static List<String> analyze(final String sentence) {
 		final Tokenizer.Builder builder = Tokenizer.builder();
 		builder.mode(Tokenizer.Mode.SEARCH);
 		Tokenizer search = builder.build();
-
-		String result = "";
-		int count = 1;
 		final List<Token> tokens = search.tokenize(sentence);
-		for(final Token token : tokens) {
-			if (tokens.size() == count) {
-				result += token.getSurfaceForm();
-			} else {
-				result += token.getSurfaceForm() + "¥s";
-			}
-			++count;
+		final List<String> analiezed = Lists.newArrayList();
+		for (final Token token : tokens) {
+			final String word = token.getSurfaceForm();
+			analiezed.add(word);
 		}
-		return result;
+		return analiezed;
+	}
+
+	public static boolean isAllHalfNumericAndSymbols(final String word) {
+		return word != null && !word.isEmpty() && word.length() == word.getBytes().length;
+	}
+	public static boolean isContainsPeriodWord(final String word) {
+		return word.contains("/。|！|？|!|?/");
 	}
 }
