@@ -117,7 +117,9 @@ public class Database {
 			if (periodCount >= MAX_PERIOD) break;
 
 			if (wordCount < MIN_WORD_COUNT || loopCount < 5) {
-				words = null;
+
+				// TODO 仕様確認が必要。ここでnullにするとselectRelation()メソッドにnullがわたってNollPointerExeption
+				//words = null;
 				++loopCount;
 			} else {
 				break;

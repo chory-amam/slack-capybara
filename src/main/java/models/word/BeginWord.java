@@ -5,7 +5,7 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 
 public interface BeginWord {
-	@SqlUpdate("create table beginword (word varchar(20));")
+	@SqlUpdate("create table  if not exists beginword (word varchar(20));")
 	void createBeginWordTable();
 
 	@SqlQuery("select count(word) from beginword where word = (:word)")
