@@ -6,7 +6,7 @@ import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
 public interface RelationQueries {
-	@SqlUpdate("create table relation (lead_word varchar(20), follow_word varchar(20), is_last bit);")
+	@SqlUpdate("create table if not exists relation (lead_word varchar(20), follow_word varchar(20), is_last bit);")
 	void createRelationTable();
 
 	@SqlQuery("select count(*) from relation where lead_word = (:lead_word) and follow_word = (:follow_word) and is_last = (:is_last)")
