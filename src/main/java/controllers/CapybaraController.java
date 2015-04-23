@@ -1,4 +1,4 @@
-package contollers;
+package controllers;
 
 import models.Database;
 import ninja.siden.App;
@@ -48,7 +48,7 @@ public class CapybaraController {
 						// TODO バックエンドでstudyするように変更する
 						Database.study(body);
 						result = true;
-					} catch(IOException e) {
+					} catch (IOException e) {
 						log.warn("", e);
 					}
 
@@ -69,10 +69,10 @@ public class CapybaraController {
 
 			try(final StreamSourceChannel reqChannel = req.raw().getRequestChannel()) {
 				reqChannel.read(byteBuffer);
-				byteBuffer.rewind();
+				byteBuffer.flip();
 
-				int pos = byteBuffer.position();
-				byte[] bytes = new byte[pos];
+				int limit = byteBuffer.limit();
+				byte[] bytes = new byte[limit];
 				byteBuffer.get(bytes);
 
 				requestBody = new String(bytes, Charset.forName("UTF-8"));

@@ -1,4 +1,4 @@
-import contollers.CapybaraController;
+import controllers.CapybaraController;
 import models.Database;
 import ninja.siden.App;
 import ninja.siden.Stoppable;
@@ -38,6 +38,7 @@ public class Bootstrap {
 	public static void main(final String[] args) {
 
 		final Bootstrap bootstrap = new Bootstrap();
+		// TODO 起動オプション or 設定ファイルから port 指定するように変更
 		final Stoppable stoppable = bootstrap.startUp(PORT);
 		bootstrap.stoppable = Optional.of(stoppable);
 
