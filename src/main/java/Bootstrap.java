@@ -1,17 +1,21 @@
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import controllers.CapybaraController;
 import models.Database;
 import ninja.siden.App;
 import ninja.siden.Stoppable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Map;
 import java.util.Optional;
 
 public class Bootstrap {
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static Logger log = LoggerFactory.getLogger(Bootstrap.class);
 	private Optional<Stoppable> stoppable = Optional.empty();
-
-	private static int PORT = 8080;
 
 	public Bootstrap() {
 	}
@@ -36,12 +40,19 @@ public class Bootstrap {
 	}
 
 	public static void main(final String[] args) {
-
 		final Bootstrap bootstrap = new Bootstrap();
-		// TODO 起動オプション or 設定ファイルから port 指定するように変更
-		final Stoppable stoppable = bootstrap.startUp(PORT);
-		bootstrap.stoppable = Optional.of(stoppable);
+		final int port;
+		try {
+			@SuppressWarnings("unchecked")
+			final Map<String, Object> yaml = (Map<String, Object>)new Yaml().load(Files.newReader(getSettingsFile(), Charsets.UTF_8));
+			port = (int)yaml.get("port");
+		} catch (final FileNotFoundException e) {
+			log.warn("Settings file is not exist.", e);
+			throw new RuntimeException();
+		}
 
+		final Stoppable stoppable = bootstrap.startUp(port);
+		bootstrap.stoppable = Optional.of(stoppable);
 		java.lang.Runtime.getRuntime().addShutdownHook(
 				new Thread() {
 					@Override
@@ -52,4 +63,11 @@ public class Bootstrap {
 		);
 	}
 
+	private static File getSettingsFile() {
+		final File settingsFile = new File("conf/capybara.yaml");
+		if (!settingsFile.exists()) {
+			return new File("src/main/resources/capybara.yaml");
+		}
+		return settingsFile;
+	}
 }
