@@ -10,6 +10,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,7 +47,7 @@ public class Bootstrap {
 		try {
 			@SuppressWarnings("unchecked")
 			final Map<String, Object> yaml = (Map<String, Object>)new Yaml().load(Files.newReader(getSettingsFile(), Charsets.UTF_8));
-			port = (int)yaml.get("port");
+			port = (Integer)yaml.get("port");
 		} catch (final FileNotFoundException e) {
 			log.warn("Settings file is not exist.", e);
 			throw new RuntimeException();
@@ -64,10 +66,10 @@ public class Bootstrap {
 	}
 
 	private static File getSettingsFile() {
-		final File settingsFile = new File("conf/capybara.yaml");
-		if (!settingsFile.exists()) {
+		final Path settingsFile = Paths.get("conf/capybara.yaml");
+		if (java.nio.file.Files.notExists(settingsFile)) {
 			return new File("src/main/resources/capybara.yaml");
 		}
-		return settingsFile;
+		return settingsFile.toFile();
 	}
 }

@@ -29,7 +29,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'ninja.siden:siden-core:0.4.0'
     compile 'io.fastjson:boon:0.32'
-    compile 'org.yaml:snakeyaml:1.14'
+    compile 'org.yaml:snakeyaml:1.15'
     testCompile 'junit:junit:4.12'
     testCompile 'org.jmockit:jmockit:1.16'
     testCompile 'com.ning:async-http-client:1.9.15'
