@@ -1,18 +1,11 @@
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import controllers.CapybaraController;
+import models.ConfigReader;
 import models.Database;
 import ninja.siden.App;
 import ninja.siden.Stoppable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Map;
 import java.util.Optional;
 
 public class Bootstrap {
@@ -43,15 +36,8 @@ public class Bootstrap {
 
 	public static void main(final String[] args) {
 		final Bootstrap bootstrap = new Bootstrap();
-		final int port;
-		try {
-			@SuppressWarnings("unchecked")
-			final Map<String, Object> yaml = (Map<String, Object>)new Yaml().load(Files.newReader(getSettingsFile(), Charsets.UTF_8));
-			port = (Integer)yaml.get("port");
-		} catch (final FileNotFoundException e) {
-			log.warn("Settings file is not exist.", e);
-			throw new RuntimeException();
-		}
+		final ConfigReader reader = ConfigReader.getInstance();
+		final int port = reader.getPort();
 
 		final Stoppable stoppable = bootstrap.startUp(port);
 		bootstrap.stoppable = Optional.of(stoppable);
@@ -65,11 +51,4 @@ public class Bootstrap {
 		);
 	}
 
-	private static File getSettingsFile() {
-		final Path settingsFile = Paths.get("conf/capybara.yaml");
-		if (java.nio.file.Files.notExists(settingsFile)) {
-			return new File("src/main/resources/capybara.yaml");
-		}
-		return settingsFile.toFile();
-	}
 }
