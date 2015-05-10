@@ -138,7 +138,8 @@ public class Database {
 	 * データベースへの接続を確立する
 	 */
 	private static JdbcConnectionPool createConnection() {
-		return JdbcConnectionPool.create("jdbc:h2:./db/h2/slack_capybara", "capybara", "password");
+		final ConfigReader reader = ConfigReader.getInstance();
+		return JdbcConnectionPool.create(reader.getDatabaseURI(), reader.getDatabaseId(), reader.getDatabasePassword());
 	}
 
 	/**

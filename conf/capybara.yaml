@@ -1,1 +1,7 @@
+## ネットワーク設定
 "port": 8080
+
+## データベース設定
+"database.uri": "jdbc:h2:./db/h2/slack_capybara"
+"database.id": "capybara"
+"database.password": "password"

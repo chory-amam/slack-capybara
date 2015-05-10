@@ -3,6 +3,7 @@ package controllers;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
 
+import models.ConfigReader;
 import models.Database;
 import ninja.siden.App;
 import ninja.siden.Stoppable;
@@ -34,13 +35,14 @@ public class CapybaraControllerTest {
 	private Database database;
 
 	Stoppable stop;
-	final ObjectMapper mapper =  JsonFactory.create();
+	final ObjectMapper mapper = JsonFactory.create();
 
 	@Before
 	public void setUp() throws Exception {
 		final App app = new App();
+		final ConfigReader reader = ConfigReader.getInstance();
 		new CapybaraController(app).defineRoutes();
-		stop = app.listen(8080);
+		stop = app.listen(reader.getPort());
 	}
 
 	@After
@@ -58,7 +60,8 @@ public class CapybaraControllerTest {
 		// RDBMSから取る部分はモックを使ってテスト
 		new Expectations() {
 			{
-				Database.pickSentence();result = wordForTest;
+				Database.pickSentence();
+				result = wordForTest;
 			}
 		};
 
