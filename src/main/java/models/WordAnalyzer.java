@@ -5,6 +5,7 @@ import org.atilika.kuromoji.Token;
 import org.atilika.kuromoji.Tokenizer;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * kuromojiを使って解析したり
@@ -30,6 +31,7 @@ public class WordAnalyzer {
 		return word != null && !word.isEmpty() && word.length() == word.getBytes().length;
 	}
 	public static boolean isContainsPeriodWord(final String word) {
-		return word.contains("/。|！|？|!|?/");
+		final Pattern p = Pattern.compile("。|！|？|!|\\?");
+		return p.matcher(word).find();
 	}
 }

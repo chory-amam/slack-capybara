@@ -68,27 +68,18 @@ public class Database {
 	}
 
 	/**
-	 * セイ！する
-	 */
-	public static String say() {
-		final String icon = CapybaraIcon.choice();
-		final String sentence = pickSentence();
-		return icon + " < " + sentence;
-	}
-
-	/**
 	 * 発言内容を生成する
 	 */
 	public static String pickSentence() {
 		log.info("pickSentence start");
 		String words = "";
 		int periodCount = 0;
-
-		// はじめの言葉を取得
-		words += selectBeginWord();
 		int loopCount = 0;
 
 		while (true) {
+			// はじめの言葉を取得
+			words += selectBeginWord();
+
 			String word = words;
 			// 文言が英数記号のみならスペース追加
 			if (WordAnalyzer.isAllHalfNumericAndSymbols(words)) {
@@ -117,9 +108,7 @@ public class Database {
 			if (periodCount >= MAX_PERIOD) break;
 
 			if (wordCount < MIN_WORD_COUNT || loopCount < 5) {
-
-				// TODO 仕様確認が必要。ここでnullにするとselectRelation()メソッドにnullがわたってNollPointerExeption
-				//words = null;
+				words = "";
 				++loopCount;
 			} else {
 				break;
@@ -130,6 +119,7 @@ public class Database {
 		if (WordAnalyzer.isAllHalfNumericAndSymbols(words)) {
 			return pickSentence();
 		} else {
+			log.info("pickSentence end");
 			return words;
 		}
 	}
