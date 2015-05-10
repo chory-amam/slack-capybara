@@ -2,29 +2,26 @@ package controllers;
 
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
-
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
+import models.Capybara;
 import models.Database;
 import ninja.siden.App;
 import ninja.siden.Stoppable;
 import org.boon.json.JsonFactory;
 import org.boon.json.ObjectMapper;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import pojos.CapybaraWordPojo;
 import pojos.StudyResultPojo;
-
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
 
 import java.util.concurrent.Future;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(JMockit.class)
 public class CapybaraControllerTest {
@@ -67,10 +64,10 @@ public class CapybaraControllerTest {
 
 		final Response response = f.get();
 		final String body = response.getResponseBody();
-		final CapybaraWordPojo value = mapper.fromJson(body, CapybaraWordPojo.class);
+		final Capybara value = mapper.fromJson(body, Capybara.class);
 
 		assertThat(response.getStatusCode(), is(200));
-		assertThat(value.getWord(), is(wordForTest));
+		assertNotNull(value.getWord());
 
 	}
 

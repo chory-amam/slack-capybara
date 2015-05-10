@@ -1,5 +1,6 @@
 package controllers;
 
+import models.Capybara;
 import models.Database;
 import ninja.siden.App;
 import ninja.siden.Renderer;
@@ -9,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnio.Pooled;
 import org.xnio.channels.StreamSourceChannel;
-import pojos.CapybaraWordPojo;
 import pojos.StudyResultPojo;
 
 import java.io.IOException;
@@ -32,8 +32,7 @@ public class CapybaraController {
 		app.get(
 				"/capybara",
 				(req, res) -> {
-					final String word = Database.pickSentence();
-					return new CapybaraWordPojo(word);
+					return new Capybara();
 				})
 				.render(Renderer.of(JsonFactory::toJson))
 				.type(JSON_TYPE);
