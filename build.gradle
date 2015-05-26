@@ -34,3 +34,11 @@ dependencies {
     testCompile 'org.jmockit:jmockit:1.16'
     testCompile 'com.ning:async-http-client:1.9.15'
 }
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'slack-capybara', 'Implementation-Version': 1.0
+        attributes "Main-Class" : "Bootstrap"
+    }
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
