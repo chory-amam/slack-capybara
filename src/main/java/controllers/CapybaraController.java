@@ -28,15 +28,9 @@ public class CapybaraController {
 	public void defineRoutes() {
 		final String JSON_TYPE = "application/json";
 
-		// 言葉を取得する
-		app.get(
-				"/capybara",
-				(req, res) -> {
-					return new Capybara();
-				})
-				.render(Renderer.of(JsonFactory::toJson))
-				.type(JSON_TYPE);
+		// 言葉を取得す
 
+		app.get("/capybara", (req, res) -> JsonFactory.toJson(new Capybara()));
 		// 会話内容を登録
 		app.post(
 				"/capybara",
@@ -51,10 +45,8 @@ public class CapybaraController {
 						log.warn("", e);
 					}
 
-					return new StudyResultPojo(result);
-				})
-				.render(Renderer.of(JsonFactory::toJson))
-				.type(JSON_TYPE);
+					return JsonFactory.toJson(new StudyResultPojo(result));
+				});
 	}
 
 	private  String getRequestBody(Request req) throws IOException {
