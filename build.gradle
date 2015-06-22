@@ -30,6 +30,7 @@ dependencies {
     compile 'ninja.siden:siden-core:0.4.0'
     compile 'io.fastjson:boon:0.32'
     compile 'org.yaml:snakeyaml:1.15'
+    compile 'org.eclipse.jetty.aggregate:jetty-all:9.3.0.v20150612'
     testCompile 'junit:junit:4.12'
     testCompile 'org.jmockit:jmockit:1.16'
     testCompile 'com.ning:async-http-client:1.9.15'

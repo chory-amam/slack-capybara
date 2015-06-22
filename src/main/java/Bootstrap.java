@@ -1,8 +1,11 @@
 import controllers.CapybaraController;
+import controllers.SampleServlet;
 import models.ConfigReader;
 import models.Database;
 import ninja.siden.App;
 import ninja.siden.Stoppable;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,27 +13,34 @@ import java.util.Optional;
 
 public class Bootstrap {
 	private static Logger log = LoggerFactory.getLogger(Bootstrap.class);
-	private Optional<Stoppable> stoppable = Optional.empty();
+	private Optional<Server> stoppable = Optional.empty();
 
 	public Bootstrap() {
 	}
 
-	public Stoppable startUp(final int port) {
+	public Server startUp(final int port) {
 		log.info("slack-capybara start.");
 
 		// DB
 		Database.initialize();
 
 		// Webサーバーの起動
-		final App app = new App();
-		new CapybaraController(app).defineRoutes();
-		return app.listen(port);
+		ServletHandler handler = new ServletHandler();
+		handler.addServletWithMapping(SampleServlet.class, "/capybara/");
+
+		Server server = new Server(port);
+		server.setHandler(handler);
+		return server;
 	}
 
 	public void stop() {
 		log.info("slack-capybara stop");
 		if(stoppable.isPresent()) {
-			stoppable.get().stop();
+			try {
+				stoppable.get().stop();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -39,8 +49,9 @@ public class Bootstrap {
 		final ConfigReader reader = ConfigReader.getInstance();
 		final int port = reader.getPort();
 
-		final Stoppable stoppable = bootstrap.startUp(port);
+		final Server stoppable = bootstrap.startUp(port);
 		bootstrap.stoppable = Optional.of(stoppable);
+
 		java.lang.Runtime.getRuntime().addShutdownHook(
 				new Thread() {
 					@Override
@@ -49,6 +60,13 @@ public class Bootstrap {
 					}
 				}
 		);
+
+		try {
+			stoppable.start();
+			stoppable.join();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
