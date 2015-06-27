@@ -7,12 +7,11 @@ import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import models.Capybara;
 
-import models.ConfigReader;
 import models.Database;
-import ninja.siden.App;
-import ninja.siden.Stoppable;
 import org.boon.json.JsonFactory;
 import org.boon.json.ObjectMapper;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,21 +31,23 @@ public class CapybaraControllerTest {
 	@Mocked
 	private Database database;
 
-	Stoppable stop;
+	Server server;
 	final ObjectMapper mapper = JsonFactory.create();
 
 	@Before
 	public void setUp() throws Exception {
-		final App app = new App();
-		final ConfigReader reader = ConfigReader.getInstance();
-		new CapybaraController(app).defineRoutes();
-		stop = app.listen(reader.getPort());
+		ServletHandler handler = new ServletHandler();
+		handler.addServletWithMapping(CapybaraController.class, "/");
+
+		server = new Server(8080);
+		server.setHandler(handler);
+		server.start();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		if (stop != null) {
-			stop.stop();
+		if (server != null) {
+			server.stop();
 		}
 	}
 
@@ -68,9 +69,10 @@ public class CapybaraControllerTest {
 
 		final Response response = f.get();
 		final String body = response.getResponseBody();
-		final Capybara value = mapper.fromJson(body, Capybara.class);
 
 		assertThat(response.getStatusCode(), is(200));
+		final Capybara value = mapper.fromJson(body, Capybara.class);
+
 		assertNotNull(value.getWord());
 
 	}
