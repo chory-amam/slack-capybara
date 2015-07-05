@@ -1,80 +1,67 @@
 package controllers;
 
+import java.io.*;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import models.Capybara;
 import models.Database;
-import ninja.siden.App;
-import ninja.siden.Renderer;
-import ninja.siden.Request;
 import org.boon.json.JsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xnio.Pooled;
-import org.xnio.channels.StreamSourceChannel;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import pojos.StudyResultPojo;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+@WebServlet("/capybara/")
+public class CapybaraController extends HttpServlet {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CapybaraController.class);
+	private static final Marker MARKER = MarkerFactory.getMarker("CapybaraController");
+	private static final long serialVersionUID = 1L;
 
-public class CapybaraController {
+	private static byte[] getPostBody(HttpServletRequest request) throws IOException {
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private App app;
-
-	public CapybaraController(App app) {
-		this.app = app;
-	}
-
-	public void defineRoutes() {
-		final String JSON_TYPE = "application/json";
-
-		// 言葉を取得す
-
-		app.get("/capybara", (req, res) -> JsonFactory.toJson(new Capybara()));
-		// 会話内容を登録
-		app.post(
-				"/capybara",
-				(req, res) -> {
-					boolean result = false;
-					try {
-						final String body = getRequestBody(req);
-						// TODO バックエンドでstudyするように変更する
-						Database.study(body);
-						result = true;
-					} catch (IOException e) {
-						log.warn("", e);
-					}
-
-					return JsonFactory.toJson(new StudyResultPojo(result));
-				});
-	}
-
-	private  String getRequestBody(Request req) throws IOException {
-
-		final String requestBody;
-
-		final Pooled<ByteBuffer> pooledByteBuffer = req.raw().getConnection().getBufferPool().allocate();
-		try {
-			final ByteBuffer byteBuffer = pooledByteBuffer.getResource();
-			byteBuffer.clear();
-
-			try(final StreamSourceChannel reqChannel = req.raw().getRequestChannel()) {
-				reqChannel.read(byteBuffer);
-				byteBuffer.flip();
-
-				int limit = byteBuffer.limit();
-				byte[] bytes = new byte[limit];
-				byteBuffer.get(bytes);
-
-				requestBody = new String(bytes, Charset.forName("UTF-8"));
-			} finally {
-				byteBuffer.clear();
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		InputStream stream  = request.getInputStream();
+		byte [] buffer = new byte[1024];
+		while(true) {
+			int len = stream.read(buffer);
+			if(len < 0) {
+				break;
 			}
-		} finally {
-			pooledByteBuffer.free();
+			bout.write(buffer, 0, len);
+		}
+		return bout.toByteArray();
+
+	}
+
+
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		final String json = JsonFactory.toJson(new Capybara());
+		res.getWriter().println(json);
+	}
+
+	@Override
+	public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		LOGGER.info("post");
+		boolean result = false;
+		try{
+			final byte[] bytes = getPostBody(req);
+			final String test = new String(bytes, "UTF-8");
+			if(!test.equals("")) {
+				Database.study(test);
+				result = true;
+			}
+		} catch (final Exception e) {
+			LOGGER.warn(MARKER, "", e);
 		}
 
-		return requestBody;
+		final String json = JsonFactory.toJson(new StudyResultPojo(result));
 
+		res.getWriter().println(json);
 	}
 }

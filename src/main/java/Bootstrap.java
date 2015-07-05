@@ -1,14 +1,17 @@
-import controllers.CapybaraController;
-import controllers.SampleServlet;
+
 import models.ConfigReader;
 import models.Database;
-import ninja.siden.App;
-import ninja.siden.Stoppable;
+
+import org.eclipse.jetty.annotations.AnnotationConfiguration;
+import org.eclipse.jetty.plus.webapp.EnvConfiguration;
+import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.webapp.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
+import java.security.ProtectionDomain;
 import java.util.Optional;
 
 public class Bootstrap {
@@ -25,11 +28,30 @@ public class Bootstrap {
 		Database.initialize();
 
 		// Webサーバーの起動
-		ServletHandler handler = new ServletHandler();
-		handler.addServletWithMapping(SampleServlet.class, "/capybara/");
+		WebAppContext war = new WebAppContext();
+		war.setContextPath("/");
+
+		// ここで war ファイルの場所を取得している
+		ProtectionDomain domain = Bootstrap.class.getProtectionDomain();
+		URL warLocation = domain.getCodeSource().getLocation();
+		war.setWar(warLocation.toExternalForm());
+
+		Configuration[] configurations = {
+				new AnnotationConfiguration(),
+				new WebInfConfiguration(),
+				new WebXmlConfiguration(),
+				new MetaInfConfiguration(),
+				new FragmentConfiguration(),
+				new EnvConfiguration(),
+				new PlusConfiguration(),
+				new JettyWebXmlConfiguration()
+		};
+
+		war.setConfigurations(configurations);
+
 
 		Server server = new Server(port);
-		server.setHandler(handler);
+		server.setHandler(war);
 		return server;
 	}
 
