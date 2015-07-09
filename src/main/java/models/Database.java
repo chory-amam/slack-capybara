@@ -44,27 +44,32 @@ public class Database {
 		log.info("study start. sentence: " + sentence);
 		// 。をすべて改行付の。にして、改行で分割。
 		final String[] lines = sentence.replace("/。/", "。¥n").split(" ");
-		for (final String line : lines) {
-			// 文章を解析して、単語ごとにスペースで区切る
-			final List<String> words = WordAnalyzer.analyze(line);
-			String preWord = null;
-			int count = 1;
-			for (final String word : words) {
-				if (preWord == null) {
-					if (!isExistBeginWord(word)) {
-						insertBeginWord(word);
+		final JdbcConnectionPool ds = createConnection();
+		try {
+			for (final String line : lines) {
+				// 文章を解析して、単語ごとにスペースで区切る
+				final List<String> words = WordAnalyzer.analyze(line);
+				String preWord = null;
+				int count = 1;
+				for (final String word : words) {
+					if (preWord == null) {
+						if (!isExistBeginWord(word, ds)) {
+							insertBeginWord(word, ds);
+						}
+					} else {
+						final boolean isLast = (words.size() == count);
+						if (!isExistRelation(preWord, word, isLast, ds)) {
+							insertRelation(preWord, word, isLast, ds);
+						}
 					}
-				} else {
-					final boolean isLast = (words.size() == count);
-					if (!isExistRelation(preWord, word, isLast)) {
-						insertRelation(preWord, word, isLast);
-					}
+					++count;
+					preWord = word;
 				}
-				++count;
-				preWord = word;
 			}
+			log.info("study end");
+		} finally {
+			ds.dispose();
 		}
-		log.info("study end");
 	}
 
 	/**
@@ -76,51 +81,56 @@ public class Database {
 		int periodCount = 0;
 		int loopCount = 0;
 
-		while (true) {
-			// はじめの言葉を取得
-			words += selectBeginWord();
+		final JdbcConnectionPool ds = createConnection();
+		try {
+			while (true) {
+				// はじめの言葉を取得
+				words += selectBeginWord(ds);
 
-			String word = words;
-			// 文言が英数記号のみならスペース追加
-			if (WordAnalyzer.isAllHalfNumericAndSymbols(words)) {
-				words += " ";
-			}
-
-			int wordCount = 1;
-			for (int i = 0; i < 15; ++i) {
-				final Relation relation = selectRelation(word);
-				if (relation == null) {
-					periodCount += MAX_PERIOD;
-					break;
+				String word = words;
+				// 文言が英数記号のみならスペース追加
+				if (WordAnalyzer.isAllHalfNumericAndSymbols(words)) {
+					words += " ";
 				}
 
-				final String nextWord = relation.followWord;
-				word = relation.followWord;
+				int wordCount = 1;
+				for (int i = 0; i < 15; ++i) {
+					final Relation relation = selectRelation(word, ds);
+					if (relation == null) {
+						periodCount += MAX_PERIOD;
+						break;
+					}
 
-				if (WordAnalyzer.isContainsPeriodWord(word)) ++periodCount;
+					final String nextWord = relation.followWord;
+					word = relation.followWord;
 
-				words += nextWord;
-				++wordCount;
+					if (WordAnalyzer.isContainsPeriodWord(word)) ++periodCount;
+
+					words += nextWord;
+					++wordCount;
+
+					if (periodCount >= MAX_PERIOD) break;
+				}
 
 				if (periodCount >= MAX_PERIOD) break;
+
+				if (wordCount < MIN_WORD_COUNT || loopCount < 5) {
+					words = "";
+					++loopCount;
+				} else {
+					break;
+				}
 			}
 
-			if (periodCount >= MAX_PERIOD) break;
-
-			if (wordCount < MIN_WORD_COUNT || loopCount < 5) {
-				words = "";
-				++loopCount;
+			// 半角英数字のみは許さない
+			if (WordAnalyzer.isAllHalfNumericAndSymbols(words)) {
+				return pickSentence();
 			} else {
-				break;
+				log.info("pickSentence end");
+				return words;
 			}
-		}
-
-		// 半角英数字のみは許さない
-		if (WordAnalyzer.isAllHalfNumericAndSymbols(words)) {
-			return pickSentence();
-		} else {
-			log.info("pickSentence end");
-			return words;
+		} finally {
+			ds.dispose();
 		}
 	}
 
@@ -135,60 +145,66 @@ public class Database {
 	/**
 	 * begin wordテーブルにすでに入っている文字か調べる
 	 */
-	private static boolean isExistBeginWord(final String word) {
-		final JdbcConnectionPool ds = createConnection();
+	private static boolean isExistBeginWord(final String word, final JdbcConnectionPool ds) {
 		final DBI dbi = new DBI(ds);
 		final BeginWord beginWord = dbi.open(BeginWord.class);
-		return beginWord.beginWordCount(word) > 0;
+		final int result = beginWord.beginWordCount(word);
+		beginWord.close();
+
+		return result > 0;
 	}
 
 	/**
 	 * begin wordテーブルに挿入する
 	 */
-	private static void insertBeginWord(final String word) {
-		final JdbcConnectionPool ds = createConnection();
+	private static void insertBeginWord(final String word, final JdbcConnectionPool ds) {
 		final DBI dbi = new DBI(ds);
 		final BeginWord beginWord = dbi.open(BeginWord.class);
 		beginWord.beginWordInsert(word);
+		beginWord.close();
 	}
 
 	/**
 	 * 最初の言葉を取得する
 	 */
-	private static String selectBeginWord() {
-		final JdbcConnectionPool ds = createConnection();
+	private static String selectBeginWord(final JdbcConnectionPool ds) {
 		final DBI dbi = new DBI(ds);
 		final BeginWord beginWord = dbi.open(BeginWord.class);
-		return beginWord.beginWordSelectByRandom();
+		final String result = beginWord.beginWordSelectByRandom();
+		beginWord.close();
+
+		return result;
 	}
 
 	/**
 	 * Relationテーブルにすでに入っている文字か調べる
 	 */
-	private static boolean isExistRelation(final String leadWord, final String followWord, final boolean isLast) {
-		final JdbcConnectionPool ds = createConnection();
+	private static boolean isExistRelation(final String leadWord, final String followWord, final boolean isLast, final JdbcConnectionPool ds) {
 		final DBI dbi = new DBI(ds);
 		final RelationQueries relation = dbi.open(RelationQueries.class);
-		return relation.relationCount(leadWord, followWord, isLast) > 0;
+		final boolean result = relation.relationCount(leadWord, followWord, isLast) > 0;
+		relation.close();
+		return result;
 	}
 
 	/**
 	 * Relationテーブルに挿入する
 	 */
-	private static void insertRelation(final String leadWord, final String followWord, final boolean isLast) {
-		final JdbcConnectionPool ds = createConnection();
+	private static void insertRelation(final String leadWord, final String followWord, final boolean isLast, final JdbcConnectionPool ds) {
 		final DBI dbi = new DBI(ds);
 		final RelationQueries relation = dbi.open(RelationQueries.class);
 		relation.relationInsert(leadWord, followWord, isLast);
+		relation.close();
 	}
 
 	/**
 	 * 続きの言葉を取得する
 	 */
-	private static Relation selectRelation(final String leadWord) {
-		final JdbcConnectionPool ds = createConnection();
+	private static Relation selectRelation(final String leadWord, final JdbcConnectionPool ds) {
 		final DBI dbi = new DBI(ds);
 		final RelationQueries relation = dbi.open(RelationQueries.class);
-		return relation.relationSelectByRandom(leadWord);
+		final Relation result = relation.relationSelectByRandom(leadWord);
+		relation.close();
+		return result;
 	}
 }
