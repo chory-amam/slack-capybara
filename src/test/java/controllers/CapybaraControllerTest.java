@@ -93,7 +93,7 @@ public class CapybaraControllerTest {
 		Future<Response> f = asyncHttpClient
 				.preparePost("http://localhost:8080/capybara")
 				.setHeader("Content-Length", "" + (wordForTest.getBytes().length))
-				.setBody(wordForTest.getBytes())
+				.setBody(wordForTest.getBytes("UTF-8"))
 				.execute();
 
 		final Response response = f.get();
