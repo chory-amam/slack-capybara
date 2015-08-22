@@ -4,3 +4,6 @@ jdk:
   - oraclejdk8
 
 script: ./gradlew build
+
+notifications:
+  slack: cappybara:WgoHVe9CPwwNpPesYxu6BtJ3
