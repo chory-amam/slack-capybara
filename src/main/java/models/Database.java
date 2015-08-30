@@ -1,5 +1,6 @@
 package models;
 
+import com.google.common.annotations.VisibleForTesting;
 import models.word.BeginWord;
 import models.word.Relation;
 import models.word.RelationQueries;
@@ -42,8 +43,7 @@ public class Database {
 	 */
 	public static void study(final String sentence) {
 		log.info("study start. sentence: " + sentence);
-		// 。をすべて改行付の。にして、改行で分割。
-		final String[] lines = sentence.replace("/。/", "。¥n").split(" ");
+		final String[] lines = splitBySentenceEnd(sentence);
 		final JdbcConnectionPool ds = createConnection();
 		try {
 			for (final String line : lines) {
@@ -70,6 +70,12 @@ public class Database {
 		} finally {
 			ds.dispose();
 		}
+	}
+
+	@VisibleForTesting
+	public static String[] splitBySentenceEnd(final String sentence) {
+		// 。をすべて改行付の。にして、改行で分割。
+		return sentence.replace("。", "。" + System.getProperty("line.separator")).split(System.getProperty("line.separator"));
 	}
 
 	/**
