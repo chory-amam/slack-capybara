@@ -32,4 +32,28 @@ public class ConfigReaderTest {
 		final ConfigReader reader = ConfigReader.getInstance();
 		assertThat(reader.getDatabasePassword(), is("password"));
 	}
+
+	@Test
+	public void SlackTeamの取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getSlackTeam(), is(""));
+	}
+
+	@Test
+	public void SlackUserNameの取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getSlackUserName(), is(""));
+	}
+
+	@Test
+	public void SlackUserPasswordの取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getSlackPassword(), is(""));
+	}
+
+	@Test
+	public void SlackRoomの取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getSlackRoom(), is(""));
+	}
 }
