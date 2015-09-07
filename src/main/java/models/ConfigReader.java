@@ -61,4 +61,17 @@ public class ConfigReader {
 	public String getDatabasePassword() {
 		return (String) yaml.get("database.password");
 	}
+
+	public String getSlackTeam() {
+		return (String) yaml.get("slack.team");
+	}
+	public String getSlackUserName() {
+		return (String) yaml.get("slack.username");
+	}
+	public String getSlackPassword() {
+		return (String) yaml.get("slack.password");
+	}
+	public String getSlackRoom() {
+		return (String) yaml.get("slack.room");
+	}
 }
