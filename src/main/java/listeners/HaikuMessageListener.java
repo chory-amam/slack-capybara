@@ -28,7 +28,7 @@ public class HaikuMessageListener implements BotanMessageListenerRegister {
                     final Reviewer reviewer = new Reviewer();
                     final Optional<Song> phrases = reviewer.find(message.getBody());
                     if (phrases.isPresent()) {
-                        final String result = "‚±‚±‚Åˆê‹å: " + toSenryuString(phrases);
+                        final String result = "ã“ã“ã§ä¸€å¥: " + toSenryuString(phrases);
                         message.reply(result);
                     }
                 });

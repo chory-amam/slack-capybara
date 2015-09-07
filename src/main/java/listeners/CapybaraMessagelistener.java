@@ -7,6 +7,7 @@ import com.github.masahitojp.botan.utils.BotanUtils;
 import models.Capybara;
 import models.Database;
 
+@SuppressWarnings("unused")
 public class CapybaraMessagelistener implements BotanMessageListenerRegister {
 
 	@Override
