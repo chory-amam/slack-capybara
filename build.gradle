@@ -34,7 +34,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'org.yaml:snakeyaml:1.15'
     compile 'com.github.masahitojp:nineteen:0.0.2'
-    compile 'com.github.masahitojp:botan:0.0.0.13'
+    compile 'com.github.masahitojp:botan:0.0.0.24'
     testCompile 'junit:junit:4.12'
     testCompile 'org.jmockit:jmockit:1.16'
 }

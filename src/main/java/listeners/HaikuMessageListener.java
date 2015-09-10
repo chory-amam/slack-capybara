@@ -1,5 +1,6 @@
 package listeners;
 
+import com.github.masahitojp.botan.Robot;
 import com.github.masahitojp.botan.listener.BotanMessageListenerRegister;
 import com.github.masahitojp.botan.utils.BotanUtils;
 import com.github.masahitojp.nineteen.Reviewer;
@@ -20,8 +21,8 @@ public class HaikuMessageListener implements BotanMessageListenerRegister {
     }
 
     @Override
-    public void register() {
-        BotanUtils.hear(
+    public void register(final Robot robot) {
+        robot.hear(
                 "(?<body>.+)",
                 "koko de ikku",
                 message -> {

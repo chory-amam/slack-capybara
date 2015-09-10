@@ -1,6 +1,7 @@
 package listeners;
 
 
+import com.github.masahitojp.botan.Robot;
 import com.github.masahitojp.botan.listener.BotanMessageListenerRegister;
 
 import com.github.masahitojp.botan.utils.BotanUtils;
@@ -11,9 +12,9 @@ import models.Database;
 public class CapybaraMessagelistener implements BotanMessageListenerRegister {
 
 	@Override
-	public void register() {
+	public void register(final Robot robot) {
 		Database.initialize();
-		BotanUtils.hear(
+		robot.hear(
 				"(?<body>.+)",
 				"talk with capybara",
 				message -> {
