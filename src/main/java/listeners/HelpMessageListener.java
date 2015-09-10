@@ -1,18 +1,17 @@
 package listeners;
 
+import com.github.masahitojp.botan.Robot;
+import com.github.masahitojp.botan.listener.BotanMessageListener;
 import com.github.masahitojp.botan.listener.BotanMessageListenerRegister;
-import com.github.masahitojp.botan.listener.BotanMessageListenerSetter;
-import com.github.masahitojp.botan.utils.BotanUtils;
 
 @SuppressWarnings("unused")
 public class HelpMessageListener implements BotanMessageListenerRegister {
     @Override
-    public void register() {
-        BotanUtils.respond("help", "show help", message -> {
+    public void register(final Robot robot) {
+        robot.respond("help", "show help", message -> {
             final StringBuilder builder = new StringBuilder();
-            for (final BotanMessageListenerSetter setter : BotanUtils.getActions()) {
-                final String line = String.format(" %s %s - %s\n", message.getRobotName(), setter.getPatternString(), setter.getDescription());
-                builder.append(line);
+            for (final BotanMessageListener listeners : robot.getListeners()) {
+                builder.append(listeners.toString());
             }
             message.reply(builder.toString());
         });
