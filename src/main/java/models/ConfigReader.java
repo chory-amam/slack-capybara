@@ -74,4 +74,25 @@ public class ConfigReader {
 	public String getSlackRoom() {
 		return (String) yaml.get("slack.room");
 	}
+	public String getGoogleMapApiKey() {
+		return (String) yaml.get("google.map.api.key");
+	}
+	public String getGoogleMapLanguage() {
+		return (String) yaml.get("google.map.language");
+	}
+	public String getGoogleMapSensor() {
+		return (String) yaml.get("google.map.sensor");
+	}
+	public String getGoogleMapScale() {
+		return (String) yaml.get("google.map.scale");
+	}
+	public String getGoogleMapZoom() {
+		return (String) yaml.get("google.map.zoom");
+	}
+	public String getGoogleMapSizeLength() {
+		return (String) yaml.get("google.map.size.length");
+	}
+	public String getGoogleMapSizeHeight() {
+		return (String) yaml.get("google.map.size.height");
+	}
 }

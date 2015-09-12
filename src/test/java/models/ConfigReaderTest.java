@@ -56,4 +56,46 @@ public class ConfigReaderTest {
 		final ConfigReader reader = ConfigReader.getInstance();
 		assertThat(reader.getSlackRoom(), is(""));
 	}
+
+	@Test
+	public void googleMapApiKeyの取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getGoogleMapApiKey(), is(""));
+	}
+
+	@Test
+	public void googleMapLanguageの取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getGoogleMapLanguage(), is("jp"));
+	}
+
+	@Test
+	public void googleMapSensorの取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getGoogleMapSensor(), is("false"));
+	}
+
+	@Test
+	public void googleMapScaleの取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getGoogleMapScale(), is("1"));
+	}
+
+	@Test
+	public void googleMapZoomの取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getGoogleMapZoom(), is("16"));
+	}
+
+	@Test
+	public void mapの横幅の取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getGoogleMapSizeLength(), is("500"));
+	}
+
+	@Test
+	public void mapの縦幅の取得テスト() {
+		final ConfigReader reader = ConfigReader.getInstance();
+		assertThat(reader.getGoogleMapSizeHeight(), is("500"));
+	}
 }
