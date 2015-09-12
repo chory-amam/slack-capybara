@@ -7,7 +7,7 @@ import models.ConfigReader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -25,11 +25,11 @@ public class ShowMapListenerTest {
     private ConfigReader reader;
 
     @Test
-    public void 意図したQueryStringが取得できること() throws UnsupportedEncodingException {
+    public void 意図したQueryStringが取得できること() throws URISyntaxException {
         final String inputAddress1 = "東京";
-        final String expectString1 = "?size=500x500&center=%E6%9D%B1%E4%BA%AC&scale=1&sensor=false&zoom=16&language=jp&markers=%E6%9D%B1%E4%BA%AC";
+        final String expectString1 = "http://maps.googleapis.com/maps/api/staticmap?center=%E6%9D%B1%E4%BA%AC&size=500x500&scale=1&sensor=false&zoom=16&language=jp&markers=%E6%9D%B1%E4%BA%AC";
         final String inputAddress2 = "&&&";
-        final String expectString2 = "?size=500x500&center=%26%26%26&scale=1&sensor=false&zoom=16&language=jp&markers=%26%26%26";
+        final String expectString2 = "http://maps.googleapis.com/maps/api/staticmap?center=%26%26%26&size=500x500&scale=1&sensor=false&zoom=16&language=jp&markers=%26%26%26";
 
         new NonStrictExpectations() {
             {
@@ -50,8 +50,8 @@ public class ShowMapListenerTest {
             }
         };
 
-        assertThat(expectString1, is(ShowMapListener.getQueryString(inputAddress1)));
-        assertThat(expectString2, is(ShowMapListener.getQueryString(inputAddress2)));
+        assertThat(ShowMapListener.buildGoogleMapURL(inputAddress1), is(expectString1));
+        assertThat(ShowMapListener.buildGoogleMapURL(inputAddress2), is(expectString2));
     }
 
 }
