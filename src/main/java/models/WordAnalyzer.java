@@ -1,8 +1,8 @@
 package models;
 
+import com.atilika.kuromoji.ipadic.Token;
+import com.atilika.kuromoji.ipadic.Tokenizer;
 import com.google.common.collect.Lists;
-import org.atilika.kuromoji.Token;
-import org.atilika.kuromoji.Tokenizer;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -15,13 +15,13 @@ public class WordAnalyzer {
 
 	// 入力した文字列を使って解析し、文言ごとにスペースで区切る
 	public static List<String> analyze(final String sentence) {
-		final Tokenizer.Builder builder = Tokenizer.builder();
+		final Tokenizer.Builder builder = new Tokenizer.Builder();
 		builder.mode(Tokenizer.Mode.SEARCH);
 		Tokenizer search = builder.build();
 		final List<Token> tokens = search.tokenize(sentence);
 		final List<String> analiezed = Lists.newArrayList();
 		for (final Token token : tokens) {
-			final String word = token.getSurfaceForm();
+			final String word = token.getSurface();
 			analiezed.add(word);
 		}
 		return analiezed;
