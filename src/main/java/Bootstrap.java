@@ -1,11 +1,9 @@
 
 import com.github.masahitojp.botan.Botan;
-import com.github.masahitojp.botan.adapter.ComandLineAdapter;
 import com.github.masahitojp.botan.adapter.SlackAdapter;
 import com.github.masahitojp.botan.exception.BotanException;
 import models.ConfigReader;
 import models.Database;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +26,7 @@ public class Bootstrap {
 		final ConfigReader reader = ConfigReader.getInstance();
 		final Botan botan = new Botan
 				.BotanBuilder()
-				.setAdapter(new ComandLineAdapter())
+				.setAdapter(new SlackAdapter(reader.getSlackTeam(), reader.getSlackUserName(), reader.getSlackPassword(), reader.getSlackRoom()))
 				.build();
 		this.botStoppable = Optional.of(botan);
 
