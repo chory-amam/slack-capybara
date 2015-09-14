@@ -1,6 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
 group = 'slack-capybara'
 version = '0.1.0'
@@ -50,5 +52,22 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'slack-capybara', 'Implementation-Version': 1.0
         attributes "Main-Class" : "Bootstrap"
+    }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
     }
 }
