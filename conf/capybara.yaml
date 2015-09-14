@@ -11,3 +11,12 @@
 "slack.username": ""
 "slack.password": ""
 "slack.room": ""
+
+## Map設定
+"google.map.api.key": ""
+"google.map.language": "jp"
+"google.map.sensor": "false"
+"google.map.scale": "1"
+"google.map.zoom": "16"
+"google.map.size.length": "500"
+"google.map.size.height": "500"

@@ -37,6 +37,7 @@ dependencies {
     compile 'org.yaml:snakeyaml:1.15'
     compile 'com.github.masahitojp:nineteen:0.0.2'
     compile 'com.github.masahitojp:botan:0.0.0.24'
+    compile 'org.apache.httpcomponents:httpclient:4.5'
     testCompile 'junit:junit:4.12'
     testCompile 'org.jmockit:jmockit:1.16'
 }
