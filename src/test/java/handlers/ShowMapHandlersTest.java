@@ -13,7 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(JMockit.class)
-public class ShowMapListenerTest {
+public class ShowMapHandlersTest {
     @Mocked({"getGoogleMapApiKey"
             , "getGoogleMapLanguage"
             , "getGoogleMapSensor"
