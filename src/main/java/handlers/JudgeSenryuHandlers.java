@@ -1,8 +1,7 @@
-package listeners;
+package handlers;
 
 import com.github.masahitojp.botan.Robot;
-import com.github.masahitojp.botan.listener.BotanMessageListenerRegister;
-import com.github.masahitojp.botan.utils.BotanUtils;
+import com.github.masahitojp.botan.handler.BotanMessageHandlers;
 import com.github.masahitojp.nineteen.Reviewer;
 import com.github.masahitojp.nineteen.Song;
 import com.github.masahitojp.nineteen.Token;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 
 
 @SuppressWarnings("unused")
-public class HaikuMessageListener implements BotanMessageListenerRegister {
+public class JudgeSenryuHandlers implements BotanMessageHandlers {
 
     public final String toSenryuString(final Optional<Song> songOpt) {
         return songOpt.map(song -> song.getPhrases().stream()
