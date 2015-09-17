@@ -1,5 +1,6 @@
 
 import com.github.masahitojp.botan.Botan;
+import com.github.masahitojp.botan.adapter.ComandLineAdapter;
 import com.github.masahitojp.botan.adapter.SlackAdapter;
 import com.github.masahitojp.botan.exception.BotanException;
 import models.ConfigReader;
@@ -26,9 +27,8 @@ public class Bootstrap {
 		// bot env
 		final ConfigReader reader = ConfigReader.getInstance();
 		final Botan botan = new Botan
-				.BotanBuilder(
-				new SlackAdapter(reader.getSlackTeam(), reader.getSlackUserName(), reader.getSlackPassword(), reader.getSlackRoom())
-		)
+				.BotanBuilder()
+				.setAdapter(new ComandLineAdapter())
 				.build();
 		this.botStoppable = Optional.of(botan);
 
