@@ -37,8 +37,9 @@ public class LGTMHandlers implements BotanMessageHandlers {
                             final JsonObject jsonObject = new Gson().fromJson(src, JsonObject.class);
                             final String imageUrl = jsonObject.get("imageUrl").getAsString();
                             message.reply(imageUrl);
+                        } else {
+                            message.reply(ERROR_PREFIX + String.format("http request failed (%d)", response.code()));
                         }
-                        message.reply(ERROR_PREFIX + String.format("http request failed (%d)", response.code()));
                     } catch (IOException e) {
                         log.warn(e.getMessage());
                         message.reply(ERROR_PREFIX + e.getMessage());
