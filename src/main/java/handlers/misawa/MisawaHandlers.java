@@ -40,8 +40,9 @@ public class MisawaHandlers implements BotanMessageHandlers {
                             }.getType();
                             final List<Meigen> rootAsMap = new Gson().fromJson(src, collectionType);
                             message.reply(BotanUtils.getRandomValue(rootAsMap).image);
+                        } else {
+                            message.reply(ERROR_PREFIX + String.format("http request failed (%d)", response.code()));
                         }
-                        message.reply(ERROR_PREFIX + String.format("http request failed (%d)", response.code()));
                     } catch (IOException e) {
                         log.warn(e.getMessage());
                         message.reply(ERROR_PREFIX + e.getMessage());
