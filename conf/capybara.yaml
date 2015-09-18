@@ -12,6 +12,16 @@
 "slack.password": ""
 "slack.room": ""
 
+## アイコン設定
+"icon.basic": ":grinning:"
+"icon.happy": ":smiley:"
+"icon.angry": ":rage4:"
+"icon.sad": ":cry:"
+"icon.other":
+ - ":full_moon_with_face:"
+ - ":goberserk:"
+ - ":heart_eyes_cat:"
+
 ## Map設定
 "google.map.api.key": ""
 "google.map.language": "jp"

@@ -2,42 +2,42 @@ package models;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 public class Capybara {
-	String word;
+    String word;
 
-	enum Icon {
-		basic(":cap:"),
-		angry(":cap_angry:"),
-		sad(":cap_cry:"),
-		happy(":cap_r:"),
-		rolling(":cap_spin3:"),
-		warp(":cap_wp1:"),
-		onsen(":cap_onsen:"),
-		event(":cap_carp:");
+    @VisibleForTesting
+    public static String choiceIcon(final int iconNum) {
+        final ConfigReader reader = ConfigReader.getInstance();
+        switch (iconNum) {
+            case 0:
+                return reader.getBasicIcon();
+            case 1:
+                return reader.getHappyIcon();
+            case 2:
+                return reader.getAngryIcon();
+            case 3:
+                return reader.getSadIcon();
+            case 4:
+                return reader.getOneOthericon();
+            default: // note: 念のため
+                return reader.getBasicIcon();
+        }
+    }
 
-		public String key;
-		Icon(final String key) {
-			this.key = key;
-		}
-	}
+    /**
+     * 0～4の整数をランダムで生成
+     * @return 0~４のどれかの整数
+     */
+    @VisibleForTesting
+    public static int getIconNumber() {
+        return (int) (Math.random() * 5);
+    }
 
-	@VisibleForTesting
-	public static String choiceIcon() {
-		final Icon[] icons = Icon.values();
-		List<Icon> iconList = Arrays.asList(icons);
-		Collections.shuffle(iconList);
-		return iconList.get(0).key;
-	}
+    public Capybara() {
+        this.word = choiceIcon(getIconNumber()) + " < " + Database.pickSentence();
+    }
 
-	public Capybara() {
-		this.word = choiceIcon() + " < " + Database.pickSentence();
-	}
-
-	public String getWord() {
-		return word;
-	}
+    public String getWord() {
+        return word;
+    }
 }
