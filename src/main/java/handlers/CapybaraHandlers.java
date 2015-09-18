@@ -4,6 +4,7 @@ package handlers;
 import com.github.masahitojp.botan.Robot;
 import com.github.masahitojp.botan.handler.BotanMessageHandlers;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import models.Capybara;
 import models.Database;
 
@@ -27,6 +28,6 @@ public class CapybaraHandlers implements BotanMessageHandlers {
 
 	@VisibleForTesting
 	public static boolean isValid(final String message) {
-		return message != null && !"".equals(message) && (!message.contains("://"));
+		return !Strings.isNullOrEmpty(message) && (!message.contains("://"));
 	}
 }
