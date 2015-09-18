@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(JMockit.class)
 public class CapybaraTest {
@@ -15,10 +16,36 @@ public class CapybaraTest {
 	@Mocked
 	private Database database;
 
+	@SuppressWarnings("unused")
+	@Mocked
+	private ConfigReader reader;
+
 	@Test
 	public void icon取得テスト() {
-		final String result = Capybara.choiceIcon();
-		assertNotNull(result);
+		new Expectations() {
+			{
+				reader.getBasicIcon(); times=1; result="basic";
+				reader.getHappyIcon(); times=1; result="happy";
+				reader.getAngryIcon(); times=1; result="angry";
+				reader.getSadIcon(); times=1; result="sad";
+				reader.getOneOthericon(); times=1; result="other";
+			}
+		};
+		for (int i = 0; i <= 4; ++i) {
+			final String result = Capybara.choiceIcon(i);
+			assertNotNull(result);
+		}
+	}
+
+	@Test
+	public void icon番号取得テスト() {
+		// 0から4の数字のどれかになること
+		// 10回テストする
+		for (int i=0; i < 10; ++i) {
+			final int result = Capybara.getIconNumber();
+			assertTrue(0 <= result);
+			assertTrue(result <= 4);
+		}
 	}
 
 	@Test
