@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class ConfigReader {
@@ -48,6 +50,32 @@ public class ConfigReader {
 
     public int getPort() {
         return (int) yaml.get("port");
+    }
+
+    public String getBasicIcon() {
+        return (String) yaml.get("icon.basic");
+    }
+
+    public String getHappyIcon() {
+        return (String) yaml.get("icon.happy");
+    }
+
+    public String getAngryIcon() {
+        return (String) yaml.get("icon.angry");
+    }
+
+    public String getSadIcon() {
+        return (String) yaml.get("icon.sad");
+    }
+
+    public List<String> getOtherIcon() {
+        return (List) yaml.get("icon.other");
+    }
+
+    public String getOneOthericon() {
+        final List<String> otherIcon = getOtherIcon();
+        Collections.shuffle(otherIcon);
+        return otherIcon.get(0);
     }
 
     public String getDatabaseURI() {
