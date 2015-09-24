@@ -1,6 +1,7 @@
 package models;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import models.word.BeginWord;
 import models.word.Relation;
 import models.word.RelationQueries;
@@ -48,22 +49,24 @@ public class Database {
 		try {
 			for (final String line : lines) {
 				// 文章を解析して、単語ごとにスペースで区切る
-				final List<String> words = WordAnalyzer.analyze(line);
-				String preWord = null;
-				int count = 1;
-				for (final String word : words) {
-					if (preWord == null) {
-						if (!isExistBeginWord(word, ds)) {
-							insertBeginWord(word, ds);
+				if (!Strings.isNullOrEmpty(line)) { // note: lineがnull,空文字の時は学習しない
+					final List<String> words = WordAnalyzer.analyze(line);
+					String preWord = null;
+					int count = 1;
+					for (final String word : words) {
+						if (count == 1) {
+							if (!isExistBeginWord(word, ds)) {
+								insertBeginWord(word, ds);
+							}
+						} else {
+							final boolean isLast = (words.size() == count);
+							if (!isExistRelation(preWord, word, isLast, ds)) {
+								insertRelation(preWord, word, isLast, ds);
+							}
 						}
-					} else {
-						final boolean isLast = (words.size() == count);
-						if (!isExistRelation(preWord, word, isLast, ds)) {
-							insertRelation(preWord, word, isLast, ds);
-						}
+						++count;
+						preWord = word;
 					}
-					++count;
-					preWord = word;
 				}
 			}
 			log.info("study end");
@@ -75,7 +78,14 @@ public class Database {
 	@VisibleForTesting
 	public static String[] splitBySentenceEnd(final String sentence) {
 		// 。をすべて改行付の。にして、改行で分割。
-		return sentence.replace("。", "。" + System.getProperty("line.separator")).split(System.getProperty("line.separator"));
+		final String separator = System.getProperty("line.separator");
+		return sentence
+				.replace("。", "。" + separator)
+				.replace("！", "！" + separator)
+				.replace("!", "!" + separator)
+				.replace("？", "？" + separator)
+				.replace("?", "?" + separator)
+				.split(separator);
 	}
 
 	/**
