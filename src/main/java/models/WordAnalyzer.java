@@ -12,12 +12,20 @@ import java.util.regex.Pattern;
  * 文言チェックしたり
  */
 public class WordAnalyzer {
+	private static Tokenizer token = null;
+	private static synchronized Tokenizer getTokenizer() {
+		if (token == null) {
+			final Tokenizer.Builder builder = new Tokenizer.Builder();
+			builder.mode(Tokenizer.Mode.SEARCH);
+			token = builder.build();
+		}
+		return token;
+	}
 
 	// 入力した文字列を使って解析し、文言ごとにスペースで区切る
 	public static List<String> analyze(final String sentence) {
-		final Tokenizer.Builder builder = new Tokenizer.Builder();
-		builder.mode(Tokenizer.Mode.SEARCH);
-		Tokenizer search = builder.build();
+
+		Tokenizer search = getTokenizer();
 		final List<Token> tokens = search.tokenize(sentence);
 		final List<String> analiezed = Lists.newArrayList();
 		for (final Token token : tokens) {
