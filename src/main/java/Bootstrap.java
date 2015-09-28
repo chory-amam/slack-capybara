@@ -42,6 +42,7 @@ public class Bootstrap {
 				log.warn("", e);
 			}
 		});
+		Database.dispose();
 	}
 
 	public static void main(final String[] args) {
