@@ -15,13 +15,13 @@ public class Database {
 	private static Logger log = LoggerFactory.getLogger(Database.class);
 	private static int MAX_PERIOD = 2;
 	private static int MIN_WORD_COUNT = 3;
-
+	private static JdbcConnectionPool ds = createConnection();
 	/**
 	 * データベースの初期化
 	 */
 	public static void initialize() {
 		log.info("database initialize.");
-		final JdbcConnectionPool ds = createConnection();
+
 		final DBI dbi = new DBI(ds);
 
 		final RelationQueries relation = dbi.open(RelationQueries.class);
@@ -34,8 +34,11 @@ public class Database {
 		beginWord.close();
 		log.info("table 'begin_word' created.");
 
-		ds.dispose();
 		log.info("database initialized.");
+	}
+
+	public static void dispose() {
+		ds.dispose();
 	}
 
 	/**
@@ -44,7 +47,7 @@ public class Database {
 	public static void study(final String sentence) {
 		log.info("study start. sentence: " + sentence);
 		final String[] lines = splitBySentenceEnd(sentence);
-		final JdbcConnectionPool ds = createConnection();
+
 		try {
 			for (final String line : lines) {
 				// 文章を解析して、単語ごとにスペースで区切る
@@ -68,7 +71,7 @@ public class Database {
 			}
 			log.info("study end");
 		} finally {
-			ds.dispose();
+			//ds.dispose();
 		}
 	}
 
@@ -87,7 +90,6 @@ public class Database {
 		int periodCount = 0;
 		int loopCount = 0;
 
-		final JdbcConnectionPool ds = createConnection();
 		try {
 			while (true) {
 				// はじめの言葉を取得
@@ -136,7 +138,7 @@ public class Database {
 				return words;
 			}
 		} finally {
-			ds.dispose();
+			//ds.dispose();
 		}
 	}
 
@@ -188,7 +190,7 @@ public class Database {
 	private static boolean isExistRelation(final String leadWord, final String followWord, final boolean isLast, final JdbcConnectionPool ds) {
 		final DBI dbi = new DBI(ds);
 		final RelationQueries relation = dbi.open(RelationQueries.class);
-		final boolean result = relation.relationCount(leadWord, followWord, isLast) > 0;
+		final boolean result = relation.relationGetOrNull(leadWord, followWord, isLast) != null;
 		relation.close();
 		return result;
 	}
