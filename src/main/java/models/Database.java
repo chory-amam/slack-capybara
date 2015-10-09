@@ -1,6 +1,6 @@
 package models;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import models.word.BeginWord;
 import models.word.Relation;
 import models.word.RelationQueries;
@@ -10,35 +10,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Database {
 	private static Logger log = LoggerFactory.getLogger(Database.class);
 	private static int MAX_PERIOD = 2;
 	private static int MIN_WORD_COUNT = 3;
-	private static JdbcConnectionPool ds = createConnection();
+	private static AtomicReference<JdbcConnectionPool> ds = new AtomicReference<>();
 	/**
 	 * データベースの初期化
 	 */
 	public static void initialize() {
 		log.info("database initialize.");
 
-		final DBI dbi = new DBI(ds);
+		ds.set(createConnection());
+		final DBI dbi = new DBI(ds.get());
 
 		final RelationQueries relation = dbi.open(RelationQueries.class);
 		relation.createRelationTable();
 		relation.close();
-		log.info("table 'RelationQueries' created.");
 
 		final BeginWord beginWord = dbi.open(BeginWord.class);
 		beginWord.createBeginWordTable();
 		beginWord.close();
-		log.info("table 'begin_word' created.");
 
 		log.info("database initialized.");
 	}
 
 	public static void dispose() {
-		ds.dispose();
+		ds.get().dispose();
 	}
 
 	/**
@@ -46,39 +46,35 @@ public class Database {
 	 */
 	public static void study(final String sentence) {
 		log.info("study start. sentence: " + sentence);
-		final String[] lines = splitBySentenceEnd(sentence);
-
+		final String[] lines = WordAnalyzer.splitBySentenceEnd(sentence);
+		
 		try {
 			for (final String line : lines) {
 				// 文章を解析して、単語ごとにスペースで区切る
-				final List<String> words = WordAnalyzer.analyze(line);
-				String preWord = null;
-				int count = 1;
-				for (final String word : words) {
-					if (preWord == null) {
-						if (!isExistBeginWord(word, ds)) {
-							insertBeginWord(word, ds);
+				if (!Strings.isNullOrEmpty(line)) { // note: lineがnull,空文字の時は学習しない
+					final List<String> words = WordAnalyzer.analyze(line);
+					String preWord = null;
+					int count = 1;
+					for (final String word : words) {
+						if (count == 1) {
+							if (!isExistBeginWord(word, ds.get())) {
+								insertBeginWord(word, ds.get());
+							}
+						} else {
+							final boolean isLast = (words.size() == count);
+							if (!isExistRelation(preWord, word, isLast, ds.get())) {
+								insertRelation(preWord, word, isLast, ds.get());
+							}
 						}
-					} else {
-						final boolean isLast = (words.size() == count);
-						if (!isExistRelation(preWord, word, isLast, ds)) {
-							insertRelation(preWord, word, isLast, ds);
-						}
+						++count;
+						preWord = word;
 					}
-					++count;
-					preWord = word;
 				}
 			}
 			log.info("study end");
 		} finally {
 			//ds.dispose();
 		}
-	}
-
-	@VisibleForTesting
-	public static String[] splitBySentenceEnd(final String sentence) {
-		// 。をすべて改行付の。にして、改行で分割。
-		return sentence.replace("。", "。" + System.getProperty("line.separator")).split(System.getProperty("line.separator"));
 	}
 
 	/**
@@ -93,7 +89,7 @@ public class Database {
 		try {
 			while (true) {
 				// はじめの言葉を取得
-				words += selectBeginWord(ds);
+				words += selectBeginWord(ds.get());
 
 				String word = words;
 				// 文言が英数記号のみならスペース追加
@@ -103,7 +99,7 @@ public class Database {
 
 				int wordCount = 1;
 				for (int i = 0; i < 15; ++i) {
-					final Relation relation = selectRelation(word, ds);
+					final Relation relation = selectRelation(word, ds.get());
 					if (relation == null) {
 						periodCount += MAX_PERIOD;
 						break;

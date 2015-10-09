@@ -1,11 +1,12 @@
 package models;
 
 import mockit.integration.junit4.JMockit;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 @RunWith(JMockit.class)
 public class WordAnalyzerTest {
@@ -30,15 +31,69 @@ public class WordAnalyzerTest {
 		final String containPeriodword3 = "ご飯食べに行きますか？";
 		final String containPeriodword4 = "help, me !";
 		final String containPeriodword5 = "where are you from ?";
+		final String containPeriodword6 = "休日もう終わりか．．．";
+		final String containPeriodword7 = "ぼくは友達がすくない...";
 		assertThat(WordAnalyzer.isContainsPeriodWord(containPeriodword1), is(true));
 		assertThat(WordAnalyzer.isContainsPeriodWord(containPeriodword2), is(true));
 		assertThat(WordAnalyzer.isContainsPeriodWord(containPeriodword3), is(true));
 		assertThat(WordAnalyzer.isContainsPeriodWord(containPeriodword4), is(true));
 		assertThat(WordAnalyzer.isContainsPeriodWord(containPeriodword5), is(true));
+		assertThat(WordAnalyzer.isContainsPeriodWord(containPeriodword6), is(true));
+		assertThat(WordAnalyzer.isContainsPeriodWord(containPeriodword7), is(true));
 
-		final String notContainsPeriodWord1 = "休日もう終わりか・・・";
 		final String notContainsPeriodWord2 = "sazaede, gozaima-su";
-		assertThat(WordAnalyzer.isContainsPeriodWord(notContainsPeriodWord1), is(false));
 		assertThat(WordAnalyzer.isContainsPeriodWord(notContainsPeriodWord2), is(false));
+	}
+
+	@Test
+	public void splitBySentenceEndが正常に動く事() {
+		{
+			final String testString = "こんにちは。私は、ドラえもんです。";
+			final String[] expectResult = {"こんにちは。", "私は、ドラえもんです。"};
+			final String[] actualResult = WordAnalyzer.splitBySentenceEnd(testString);
+			Assert.assertThat(actualResult, is(expectResult));
+		}
+
+		{
+			final String testString = "こんにちは！私は、ドラえもんです！";
+			final String[] expectResult = {"こんにちは！", "私は、ドラえもんです！"};
+			final String[] actualResult = WordAnalyzer.splitBySentenceEnd(testString);
+			Assert.assertThat(actualResult, is(expectResult));
+		}
+
+		{
+			final String testString = "こんにちは!私は、ドラえもんです!";
+			final String[] expectResult = {"こんにちは!", "私は、ドラえもんです!"};
+			final String[] actualResult = WordAnalyzer.splitBySentenceEnd(testString);
+			Assert.assertThat(actualResult, is(expectResult));
+		}
+
+		{
+			final String testString = "こんにちは？私は、ドラえもんです？";
+			final String[] expectResult = {"こんにちは？", "私は、ドラえもんです？"};
+			final String[] actualResult = WordAnalyzer.splitBySentenceEnd(testString);
+			Assert.assertThat(actualResult, is(expectResult));
+		}
+
+		{
+			final String testString = "こんにちは?私は、ドラえもんです?";
+			final String[] expectResult = {"こんにちは?", "私は、ドラえもんです?"};
+			final String[] actualResult = WordAnalyzer.splitBySentenceEnd(testString);
+			Assert.assertThat(actualResult, is(expectResult));
+		}
+
+		{
+			final String testString = "こんにちは.私は、ドラえもんです.";
+			final String[] expectResult = {"こんにちは.", "私は、ドラえもんです."};
+			final String[] actualResult = WordAnalyzer.splitBySentenceEnd(testString);
+			Assert.assertThat(actualResult, is(expectResult));
+		}
+
+		{
+			final String testString = "こんにちは．私は、ドラえもんです．";
+			final String[] expectResult = {"こんにちは．", "私は、ドラえもんです．"};
+			final String[] actualResult = WordAnalyzer.splitBySentenceEnd(testString);
+			Assert.assertThat(actualResult, is(expectResult));
+		}
 	}
 }
