@@ -3,9 +3,9 @@ package models;
 import com.atilika.kuromoji.ipadic.Token;
 import com.atilika.kuromoji.ipadic.Tokenizer;
 import com.google.common.collect.Lists;
+import models.word.PeriodConst;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * kuromojiを使って解析したり
@@ -31,7 +31,18 @@ public class WordAnalyzer {
 		return word != null && !word.isEmpty() && word.length() == word.getBytes().length;
 	}
 	public static boolean isContainsPeriodWord(final String word) {
-		final Pattern p = Pattern.compile("。|！|？|!|\\?");
-		return p.matcher(word).find();
+		for (final String period : PeriodConst.period) {
+			if (word.contains(period)) return true;
+		}
+		return false;
+	}
+
+	public static String[] splitBySentenceEnd(String sentence) {
+		// 。をすべて改行付の。にして、改行で分割。
+		final String separator = System.getProperty("line.separator");
+		for (final String period : PeriodConst.period) {
+			 sentence =  sentence.replace(period, period + separator);
+		}
+		return sentence.split(separator);
 	}
 }
