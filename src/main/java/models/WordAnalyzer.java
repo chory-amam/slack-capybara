@@ -38,7 +38,6 @@ public class WordAnalyzer {
 	}
 
 	public static String[] splitBySentenceEnd(String sentence) {
-		// 。をすべて改行付の。にして、改行で分割。
 		final String separator = System.getProperty("line.separator");
 		for (final String period : PeriodConst.period) {
 			 sentence =  sentence.replace(period, period + separator);
