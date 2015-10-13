@@ -106,6 +106,10 @@ public class ConfigReader {
         return (String) yaml.get("slack.room");
     }
 
+    public String getSlackApiToken() {
+        return (String) yaml.get("slack.api.token");
+    }
+
     public String getGoogleMapApiKey() {
         return (String) yaml.get("google.map.api.key");
     }

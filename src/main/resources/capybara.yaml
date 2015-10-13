@@ -6,11 +6,19 @@
 "database.id": "capybara"
 "database.password": "password"
 
-## slack設定
+# Slackの設定start
+# XMPP or Slack API でどちらかが必要
+
+## Slack設定(XMPPで接続)
 "slack.team": ""
 "slack.username": ""
 "slack.password": ""
 "slack.room": ""
+
+## Slack設定(Slack Real Time Messaging API)
+"slack.api.token": ""
+
+# Slack設定 end
 
 ## アイコン設定
 "icon.basic": ":grinning:"
