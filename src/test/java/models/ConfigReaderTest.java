@@ -100,6 +100,12 @@ public class ConfigReaderTest {
     }
 
     @Test
+    public void SlackAPITokenの取得テスト() {
+        final ConfigReader reader = ConfigReader.getInstance();
+        assertThat(reader.getSlackApiToken(), is(""));
+    }
+
+    @Test
     public void googleMapApiKeyの取得テスト() {
         final ConfigReader reader = ConfigReader.getInstance();
         assertThat(reader.getGoogleMapApiKey(), is(""));
