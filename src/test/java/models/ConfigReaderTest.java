@@ -76,6 +76,18 @@ public class ConfigReaderTest {
     }
 
     @Test
+    public void KVS_URIの取得テスト() {
+        final ConfigReader reader = ConfigReader.getInstance();
+        assertThat(reader.getKvsURI(), is("./db/mapdb/slack_capybara"));
+    }
+
+    @Test
+    public void KVS名の取得テスト() {
+        final ConfigReader reader = ConfigReader.getInstance();
+        assertThat(reader.getKvsName(), is("slack_capybara"));
+    }
+
+    @Test
     public void SlackTeamの取得テスト() {
         final ConfigReader reader = ConfigReader.getInstance();
         assertThat(reader.getSlackTeam(), is(""));
