@@ -14,7 +14,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(JMockit.class)
 public class ConfigReaderTest {
-    ConfigReader reader = ConfigReader.getInstance();
+    ConfigReader reader;
 
     @Before
     public void startUP() {
