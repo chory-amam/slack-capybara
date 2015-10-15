@@ -12,16 +12,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(JMockit.class)
 public class CapybaraTest {
 
-	@SuppressWarnings("unused")
-	@Mocked
-	private Database database;
-
-	@SuppressWarnings("unused")
-	@Mocked
-	private ConfigReader reader;
-
 	@Test
-	public void icon取得テスト() {
+	public void icon取得テスト(@Mocked ConfigReader reader) {
 		new Expectations() {
 			{
 				reader.getBasicIcon(); times=1; result="basic";
@@ -49,7 +41,7 @@ public class CapybaraTest {
 	}
 
 	@Test
-	public void 発言されたかのチェック() {
+	public void 発言されたかのチェック(@Mocked Database database) {
 		new Expectations() {
 			{
 				Database.pickSentence();
