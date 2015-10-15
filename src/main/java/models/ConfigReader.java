@@ -37,6 +37,7 @@ public class ConfigReader {
     private ConfigReader() {
         try {
             final File SettingsFile = getSettingsFile();
+            log.info("FileName: " + SettingsFile.getName() + "FilePath: " + SettingsFile.getAbsolutePath());
             yaml = (Map<String, Object>) new Yaml().load(com.google.common.io.Files.newReader(SettingsFile, Charsets.UTF_8));
         } catch (final FileNotFoundException e) {
             log.warn("config file is not exist.", e);
