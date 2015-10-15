@@ -6,6 +6,10 @@
 "database.id": "capybara"
 "database.password": "password"
 
+## KVSの設定
+"kvs.uri": "./db/mapdb/slack_capybara"
+"kvs.name": "slack_capybara"
+
 # Slackの設定start
 # XMPP or Slack API でどちらかが必要
 
