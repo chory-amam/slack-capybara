@@ -1,6 +1,6 @@
 package utils;
 
-public class RegexTestPattern {
+public final class RegexTestPattern {
     public String getDescription() {
         return description;
     }
@@ -9,23 +9,23 @@ public class RegexTestPattern {
         return message;
     }
 
-    public int getTimes() {
-        return times;
+    public int getInvocations() {
+        return invocations;
     }
 
     private final String description;
     private final String message;
-    private final int times;
+    private final int invocations;
 
-    public RegexTestPattern(String description, String message) {
+    public RegexTestPattern(final String description, final String message) {
         this.description = description;
         this.message = message;
-        this.times = 1;
+        this.invocations = 1;
     }
 
-    public RegexTestPattern(String description, String message, int times) {
+    public RegexTestPattern(final String description, final String message, final int invocations) {
         this.description = description;
         this.message = message;
-        this.times = times;
+        this.invocations = invocations;
     }
 }
