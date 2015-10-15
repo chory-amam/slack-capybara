@@ -24,6 +24,9 @@ repositories {
     }
 }
 
+configurations { jmockit }
+
+
 dependencies {
     compile 'com.atilika.kuromoji:kuromoji-ipadic:0.9.0'
     compile 'org.slf4j:slf4j-api:1.7.7'
@@ -42,8 +45,16 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'org.jsoup:jsoup:1.7.3'
     compile 'it.sauronsoftware.cron4j:cron4j:2.2.5'
+    jmockit ('org.jmockit:jmockit:1.16')
     testCompile 'junit:junit:4.12'
-    testCompile 'org.jmockit:jmockit:1.16'
+}
+
+
+
+test {
+    // jmockitがjunitよりも前にclasspathが通ってる必要があるので下記の対応を行う
+    sourceSets.test.compileClasspath = configurations.jmockit + sourceSets.test.compileClasspath
+    sourceSets.test.runtimeClasspath = configurations.jmockit + sourceSets.test.runtimeClasspath
 }
 
 jar {
@@ -68,6 +79,10 @@ buildscript {
     dependencies {
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
     }
+}
+
+jacoco {
+    toolVersion = "0.7.4.201502262128"
 }
 
 jacocoTestReport {
