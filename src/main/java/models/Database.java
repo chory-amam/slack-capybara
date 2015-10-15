@@ -46,7 +46,7 @@ public class Database {
 	 */
 	public static void study(final String sentence) {
 		log.info("study start. sentence: " + sentence);
-		final String[] lines = WordAnalyzer.splitBySentenceEnd(sentence);
+		final String[] lines = WordAnalyzer.splitBySpecialSymbol(sentence);
 		
 		try {
 			for (final String line : lines) {
