@@ -90,6 +90,14 @@ public class ConfigReader {
         return (String) yaml.get("database.password");
     }
 
+    public String getKvsURI() {
+        return (String) yaml.get("kvs.uri");
+    }
+
+    public String getKvsName() {
+        return (String) yaml.get("kvs.name");
+    }
+
     public String getSlackTeam() {
         return (String) yaml.get("slack.team");
     }
