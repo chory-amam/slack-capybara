@@ -23,11 +23,13 @@ public class ConfigReader {
     private static File getSettingsFile() throws FileNotFoundException {
         final String userFilePath = "conf/capybara.yaml";
         if (Files.exists(Paths.get(userFilePath))) {
+            log.info("1.existsは動作したよ");
             return new File(userFilePath);
         }
 
         final String defaultFilePath = "src/main/java/resources/capybara.yaml";
         if (Files.exists(Paths.get(defaultFilePath))) {
+            log.info("2.existsは動作したよ");
             return new File(defaultFilePath);
         }
 
