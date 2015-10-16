@@ -39,7 +39,7 @@ public class PlusPlusHandlers implements BotanMessageHandlers {
         return result;
     }
 
-    public int incr(BotanBrain brain, final String key) {
+    private int incr(BotanBrain brain, final String key) {
         return getInteger(brain, key, t -> t + 1);
     }
 }

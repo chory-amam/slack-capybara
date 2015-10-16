@@ -48,4 +48,10 @@ public class PlusPlusHandlersTest {
 				)
 		);
 	}
+	@Test
+	public void incr() {
+		final HandlersTestUtils utils = new HandlersTestUtils();
+		utils.replyTest(botan, "botan botan++", "botan : total(1)");
+		utils.replyTest(botan, "botan botan++", "botan : total(2)");
+	}
 }

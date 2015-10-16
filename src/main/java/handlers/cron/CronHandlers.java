@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
-import java.util.StringJoiner;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class CronHandlers implements BotanMessageHandlers {
@@ -101,18 +101,16 @@ public class CronHandlers implements BotanMessageHandlers {
                 "job\\s+(?:list|ls)\\z",
                 JOB_LIST_DESCRIPTION,
                 botanMessage -> {
-                    final StringJoiner sb = new StringJoiner("\n");
-                    final TreeMap<Integer, String> sorted_map = new TreeMap<>();
-                    sorted_map.putAll(cronIds);
-                    sorted_map.forEach((jobId, v) -> {
-                        final CronJob job = runningJobs.get(v);
-                        sb.add(String.format("%d: \"%s\" %s", jobId, job.schedule, job.message));
-                    });
-                    String result = sb.toString();
-                    if (result.equals("")) {
-                        result = "no jobs";
+                    if (cronIds.isEmpty()) {
+                        botanMessage.reply("no jobs");
+                    } else {
+                        botanMessage.reply(
+                            new TreeMap<> (cronIds).entrySet().stream().map(entry -> {
+                                final CronJob job = runningJobs.get(entry.getValue());
+                                return String.format("%d: \"%s\" %s", entry.getKey(), job.schedule, job.message);
+                            }).collect(Collectors.joining("\n")))
+                        ;
                     }
-                    botanMessage.reply(result);
                 }
         );
 
