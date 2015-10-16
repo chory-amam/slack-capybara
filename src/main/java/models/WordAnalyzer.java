@@ -50,18 +50,17 @@ public class WordAnalyzer {
 
     public static String[] splitBySpecialSymbol(String sentence) {
         final String separator = System.getProperty("line.separator");
+        // "「愛」と「勇気」だけが友達さ"が、"とだけが友達さ"と変な内容になってしまうので
+        // かっこ削除は一旦コメントアウトする
+        //sentence = lineBreakByParenthesis(sentence);
         sentence = lineBreakByPeriod(sentence, separator);
-        sentence = lineBreakBySpace(sentence, separator);
-        sentence = lineBreakByParenthesis(sentence);
+        sentence = convertFullWidthToHalfWidth(sentence);
         return sentence.split(separator);
     }
 
     @VisibleForTesting
-    public static String lineBreakBySpace(String sentence, String separator) {
-        for (final String space : SymbolConst.SPACE) {
-            sentence = sentence.replace(space, separator);
-        }
-        return sentence;
+    public static String convertFullWidthToHalfWidth(String sentence) {
+        return sentence.replace("　", " ");
     }
 
     @VisibleForTesting
