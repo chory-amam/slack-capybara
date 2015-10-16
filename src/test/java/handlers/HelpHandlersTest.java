@@ -48,7 +48,7 @@ public class HelpHandlersTest {
 		);
 	}
 	@Test
-	public void time() {
-		new HandlersTestUtils().replyTest(botan, "botan help", "> botan help\\z - Displays all of the help commands.");
+	public void help() {
+		new HandlersTestUtils().replyTest(botan, "botan help", "> botan help\\z - Displays all of the commands.");
 	}
 }

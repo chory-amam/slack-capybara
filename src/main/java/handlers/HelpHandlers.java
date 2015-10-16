@@ -9,7 +9,7 @@ import java.util.StringJoiner;
 public class HelpHandlers implements BotanMessageHandlers {
     @Override
     public void register(final Robot robot) {
-        robot.respond("help\\z", "Displays all of the help commands.", message -> {
+        robot.respond("help\\z", "Displays all of the commands.", message -> {
             final StringJoiner builder = new StringJoiner("\n");
             robot.getHandlers().stream().sorted()
                 .forEach(handler -> builder.add(handler.toString()));
