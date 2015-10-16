@@ -9,16 +9,12 @@ import java.util.List;
 public class SymbolConst {
     public static List<String> PERIOD = Lists.newArrayList(
             "。"
-            , "！"
-            , "!"
-            , "？"
-            , "?"
+            //, "！" // !! や !? が来た時に分割してしまうので除外することにする
+            //, "!"
+            //, "？"
+            //, "?"
             , "."
             , "．"
-    );
-    public static List<String> SPACE = Lists.newArrayList(
-            " "
-            , "　"
     );
     public static List<Pair<String, String>> PARENTHESIS = Lists.newArrayList(
             new ImmutablePair<>("「", "」"),
