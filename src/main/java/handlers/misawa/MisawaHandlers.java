@@ -23,7 +23,7 @@ public class MisawaHandlers implements BotanMessageHandlers {
     @Override
     public void register(final Robot robot) {
         robot.respond(
-                "misawa( +(.*))?",
+                "(?i)misawa\\z",
                 "returns JIGOKU-NO-MISAWA image",
                 message -> {
                     final OkHttpClient client = new OkHttpClient();

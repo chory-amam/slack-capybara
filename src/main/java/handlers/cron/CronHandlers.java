@@ -11,15 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
+import java.util.StringJoiner;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unused")
-public class CronMessageHandlers implements BotanMessageHandlers {
+public class CronHandlers implements BotanMessageHandlers {
     public static String JOB_ADD_DESCRIPTION = "add job";
     public static String JOB_LIST_DESCRIPTION = "show job list";
     public static String JOB_RM_DESCRIPTION = "remove job from list";
-    private static Logger logger = LoggerFactory.getLogger(CronMessageHandlers.class);
+    private static Logger logger = LoggerFactory.getLogger(CronHandlers.class);
     private static String NAME_SPACE = "cronjob_";
     private final Object lock = new Object();
     private final ConcurrentHashMap<Integer, String> cronIds = new ConcurrentHashMap<>();
@@ -72,7 +73,7 @@ public class CronMessageHandlers implements BotanMessageHandlers {
     public final void register(final Robot robot) {
 
         robot.respond(
-                "job\\s+(?:new|add)\\s+\"(?<schedule>.+)\"\\s+(?<message>.+)$",
+                "job\\s+(?:new|add)\\s+\"(?<schedule>.+)\"\\s+(?<message>.+)\\z",
                 JOB_ADD_DESCRIPTION,
                 message -> {
                     try {
@@ -97,15 +98,15 @@ public class CronMessageHandlers implements BotanMessageHandlers {
         );
 
         robot.respond(
-                "job\\s+(?:list|ls)$",
+                "job\\s+(?:list|ls)\\z",
                 JOB_LIST_DESCRIPTION,
                 botanMessage -> {
-                    final StringBuilder sb = new StringBuilder();
+                    final StringJoiner sb = new StringJoiner("\n");
                     final TreeMap<Integer, String> sorted_map = new TreeMap<>();
                     sorted_map.putAll(cronIds);
                     sorted_map.forEach((jobId, v) -> {
                         final CronJob job = runningJobs.get(v);
-                        sb.append(String.format("%d: \"%s\" %s\n", jobId, job.schedule, job.message));
+                        sb.add(String.format("%d: \"%s\" %s", jobId, job.schedule, job.message));
                     });
                     String result = sb.toString();
                     if (result.equals("")) {
@@ -116,7 +117,7 @@ public class CronMessageHandlers implements BotanMessageHandlers {
         );
 
         robot.respond(
-                "job\\s+(?:rm|remove|del|delete)\\s+(?<id>\\d+)$",
+                "job\\s+(?:rm|remove|del|delete)\\s+(?<id>\\d+)\\z",
                 JOB_RM_DESCRIPTION,
                 message -> {
                     try {

@@ -20,7 +20,7 @@ public class LGTMHandlers implements BotanMessageHandlers {
     @Override
     public final void register(final Robot robot) {
         robot.respond(
-                "lgtm",
+                "(?i)lgtm\\z",
                 "fetching an image from www.lgtm.in.",
                 message -> {
                     final OkHttpClient client = new OkHttpClient();
