@@ -1,6 +1,6 @@
-package utils;
+package utils.pattern;
 
-public final class RegexTestPattern {
+public abstract class RegexTestPattern {
     public String getDescription() {
         return description;
     }
@@ -16,6 +16,18 @@ public final class RegexTestPattern {
     private final String description;
     private final String message;
     private final int invocations;
+
+    public RegexTestPattern(final String message) {
+        this.description = "";
+        this.message = message;
+        this.invocations = 1;
+    }
+
+    public RegexTestPattern(final String message, final int invocations) {
+        this.description = "";
+        this.message = message;
+        this.invocations = invocations;
+    }
 
     public RegexTestPattern(final String description, final String message) {
         this.description = description;

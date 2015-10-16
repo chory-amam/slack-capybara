@@ -13,7 +13,7 @@ public class PlusPlusHandlers implements BotanMessageHandlers {
     @Override
     public void register(final Robot robot) {
         robot.respond(
-                "\\s*(?<body>.+)\\Q++\\E",
+                "\\s*(?<body>.+)\\Q++\\E\\z",
                 "string++",
                 message -> {
                     final String body = message.getMatcher().group("body");
