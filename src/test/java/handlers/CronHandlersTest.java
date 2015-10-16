@@ -5,9 +5,9 @@ import adapter.MockAdapter;
 import com.github.masahitojp.botan.brain.LocalBrain;
 import com.github.masahitojp.botan.exception.BotanException;
 
-import handlers.cron.CronMessageHandlers;
+import handlers.cron.CronHandlers;
 import utils.HandlersTestUtils;
-import utils.RegexTestPattern;
+import utils.pattern.InvocationRegexPattern;
 import mockit.Mock;
 import mockit.MockUp;
 import org.junit.After;
@@ -23,11 +23,11 @@ import static org.junit.Assert.assertThat;
 public class CronHandlersTest {
     Botan botan;
     @Before
-    public void startUp() throws BotanException {
+    public void setUp() throws BotanException {
         botan = new Botan.BotanBuilder()
                 .setAdapter(new MockAdapter())
                 .setBrain(new LocalBrain())
-                .setMessageHandlers(new CronMessageHandlers())
+                .setMessageHandlers(new CronHandlers())
                 .build();
         botan.start();
     }
@@ -46,14 +46,14 @@ public class CronHandlersTest {
         new HandlersTestUtils().regexTest(
                 botan,
                 Arrays.asList(
-                        new RegexTestPattern(CronMessageHandlers.JOB_ADD_DESCRIPTION, "botan job add \"* * * * *\" test"),
-                        new RegexTestPattern(CronMessageHandlers.JOB_ADD_DESCRIPTION, "botan job new \"* * * * *\" test"),
-                        new RegexTestPattern(CronMessageHandlers.JOB_LIST_DESCRIPTION, "botan job ls"),
-                        new RegexTestPattern(CronMessageHandlers.JOB_LIST_DESCRIPTION, "botan job list"),
-                        new RegexTestPattern(CronMessageHandlers.JOB_RM_DESCRIPTION, "botan job rm 1234"),
-                        new RegexTestPattern(CronMessageHandlers.JOB_RM_DESCRIPTION, "botan job remove 1234"),
-                        new RegexTestPattern(CronMessageHandlers.JOB_RM_DESCRIPTION, "botan job del 1234"),
-                        new RegexTestPattern(CronMessageHandlers.JOB_RM_DESCRIPTION, "botan job delete 1234")
+                        new InvocationRegexPattern(CronHandlers.JOB_ADD_DESCRIPTION, "botan job add \"* * * * *\" test"),
+                        new InvocationRegexPattern(CronHandlers.JOB_ADD_DESCRIPTION, "botan job new \"* * * * *\" test"),
+                        new InvocationRegexPattern(CronHandlers.JOB_LIST_DESCRIPTION, "botan job ls"),
+                        new InvocationRegexPattern(CronHandlers.JOB_LIST_DESCRIPTION, "botan job list"),
+                        new InvocationRegexPattern(CronHandlers.JOB_RM_DESCRIPTION, "botan job rm 1234"),
+                        new InvocationRegexPattern(CronHandlers.JOB_RM_DESCRIPTION, "botan job remove 1234"),
+                        new InvocationRegexPattern(CronHandlers.JOB_RM_DESCRIPTION, "botan job del 1234"),
+                        new InvocationRegexPattern(CronHandlers.JOB_RM_DESCRIPTION, "botan job delete 1234")
                 )
         );
     }
@@ -79,11 +79,13 @@ public class CronHandlersTest {
         // register failed
         new HandlersTestUtils().replyTest(botan, "botan job add \"* * * *\" test", "job register failed:invalid pattern: \"* * * *\"");
         // list
-        new HandlersTestUtils().replyTest(botan, "botan job ls", "1111: \"* * * * *\" test\n");
+        new HandlersTestUtils().replyTest(botan, "botan job ls", "1111: \"* * * * *\" test");
         // del failed
         new HandlersTestUtils().replyTest(botan, "botan job del 2222", "job rm failed: id 2222 not found");
         // del success
         new HandlersTestUtils().replyTest(botan, "botan job del 1111", "job rm successful");
+        // no jobs
+        new HandlersTestUtils().replyTest(botan, "botan job ls", "no jobs");
     }
 
 

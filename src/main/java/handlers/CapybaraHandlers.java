@@ -13,7 +13,6 @@ public class CapybaraHandlers implements BotanMessageHandlers {
 
 	@Override
 	public void register(final Robot robot) {
-		Database.initialize();
 		robot.hear(
 				"(?<body>.+)",
 				"talk with capybara",

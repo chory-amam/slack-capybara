@@ -5,6 +5,7 @@ import com.github.masahitojp.botan.message.BotanMessage;
 import com.github.masahitojp.botan.message.BotanMessageSimple;
 import mockit.Mock;
 import mockit.MockUp;
+import utils.pattern.RegexTestPattern;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +32,7 @@ public class HandlersTestUtils {
 
 		Collections.unmodifiableList(list)
 				.stream()
-				.forEach(pattern -> {
+				.forEach(testPattern -> {
 					// before: set mock
 					final AtomicInteger times = new AtomicInteger();
 					MockUp<Consumer<BotanMessage>> spy = new MockUp<Consumer<BotanMessage>>() {
@@ -43,14 +44,14 @@ public class HandlersTestUtils {
 					};
 					botan.getHandlers()
 							.stream()
-							.filter(handler -> handler.getDescription().equals(pattern.getDescription()))
+							.filter(handler -> testPattern.getDescription().equals("") || handler.getDescription().equals(testPattern.getDescription()))
 							.forEach(handler -> handler.setHandle(spy.getMockInstance()));
 
 					// given: handlerが登録されている場合
 					// when: 規定のパターンのメッセージを受け取った時に
-					botan.receive(new BotanMessageSimple(pattern.getMessage()));
+					botan.receive(new BotanMessageSimple(testPattern.getMessage()));
 					// then: 想定の回数分処理が呼ばれる
-					assertThat(times.get(), is(pattern.getInvocations()));
+					assertThat(times.get(), is(testPattern.getInvocations()));
 				});
 	}
 
