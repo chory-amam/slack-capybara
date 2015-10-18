@@ -90,3 +90,25 @@ jacocoTestReport {
         html.enabled = true
     }
 }
+
+task archive(type: Zip, dependsOn: jar) {
+    archiveName = "${baseName}_${version}.${extension}"
+    from('scripts') {
+        filter(
+                org.apache.tools.ant.filters.ReplaceTokens,
+                tokens: [
+                        'version': version
+                ]
+        )
+    }
+    into('conf') {
+        from "src/main/resources/capybara.yaml"
+    }
+    into('lib') {
+        from jar.archivePath
+    }
+}
+
+artifacts {
+    archives archive
+}
