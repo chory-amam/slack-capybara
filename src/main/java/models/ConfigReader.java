@@ -19,21 +19,6 @@ public class ConfigReader {
     final private static ConfigReader reader = new ConfigReader();
     Map<String, Object> yaml = null;
 
-
-    private static File getSettingsFile() throws FileNotFoundException {
-        final String userFilePath = "conf/capybara.yaml";
-        if (Files.exists(Paths.get(userFilePath))) {
-            return new File(userFilePath);
-        }
-
-        final String defaultFilePath = "src/main/java/resources/capybara.yaml";
-        if (Files.exists(Paths.get(defaultFilePath))) {
-            return new File(defaultFilePath);
-        }
-
-        throw new FileNotFoundException();
-    }
-
     private ConfigReader() {
         try {
             final File SettingsFile = getSettingsFile();
@@ -42,6 +27,20 @@ public class ConfigReader {
             log.warn("config file is not exist.", e);
             throw new RuntimeException();
         }
+    }
+
+    private static File getSettingsFile() throws FileNotFoundException {
+        final String userFilePath = "conf/capybara.yaml";
+        if (Files.exists(Paths.get(userFilePath))) {
+            return new File(userFilePath);
+        }
+
+        final String defaultFilePath = Capybara.class.getClassLoader().getResource("capybara.yaml").getPath();
+        if (Files.exists(Paths.get(defaultFilePath))) {
+            return new File(defaultFilePath);
+        }
+
+        throw new FileNotFoundException();
     }
 
     public static ConfigReader getInstance() {
