@@ -7,6 +7,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -23,21 +25,21 @@ public class ConfigReader {
         try {
             final File SettingsFile = getSettingsFile();
             yaml = (Map<String, Object>) new Yaml().load(com.google.common.io.Files.newReader(SettingsFile, Charsets.UTF_8));
-        } catch (final FileNotFoundException e) {
+        } catch (final FileNotFoundException | URISyntaxException e) {
             log.warn("config file is not exist.", e);
             throw new RuntimeException();
         }
     }
 
-    private static File getSettingsFile() throws FileNotFoundException {
+    private static File getSettingsFile() throws FileNotFoundException,URISyntaxException {
         final String userFilePath = "conf/capybara.yaml";
         if (Files.exists(Paths.get(userFilePath))) {
             return new File(userFilePath);
         }
 
-        final String defaultFilePath = Capybara.class.getClassLoader().getResource("capybara.yaml").getPath();
-        if (Files.exists(Paths.get(defaultFilePath))) {
-            return new File(defaultFilePath);
+        final URI defaultPath = Capybara.class.getClassLoader().getResource("capybara.yaml").toURI();
+        if (Files.exists(Paths.get(defaultPath))) {
+            return new File(defaultPath);
         }
 
         throw new FileNotFoundException();
