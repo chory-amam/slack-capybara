@@ -115,7 +115,7 @@ $ ./startup.sh
 
 ## Licence
 
-選定中...
+[Apache License, Version 2.0](https://github.com/chory-amam/slack-capybara/blob/master/LICENSE.txt)
 
 ## Author
 
