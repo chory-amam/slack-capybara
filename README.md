@@ -115,7 +115,7 @@ $ ./startup.sh
 
 ## リンク
 
-Powerd by 牡丹(botan)[https://github.com/masahitojp/botan-core]
+Powered by 牡丹(botan)[https://github.com/masahitojp/botan-core]`
 
 ## Author
 
