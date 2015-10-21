@@ -63,10 +63,12 @@ slackで特定のChannelに話しかけることで反応します。
 | 月       | 1 ~ 12                                          |
 | 曜日     | 0 ~ 7 (0:日,1:月,2:火,3:水,4:木,5:金,6:土,7:日) |
 
+各項目ですべての値を指定する場合はアスタリスク(*)を入力します。
+
 ##### 例:毎週月曜日の9時にミーティングを通知する場合
 
 ```
-@hubot名 botan job add "* 9 * * 1" ミーティングの時間かっぴ！
+@bot名 botan job add "0 9 * * 1" ミーティングの時間かっぴ！
 ```
 
 ## 動作環境
@@ -110,12 +112,16 @@ $ ./startup.sh
  特定のChannelで動作させる場合は、管理者ユーザーがcapybara用に登録したhubot integrationを招待(invite)してください。デフォルトではgeneralに所属します。
 特定のChannelから追い出す場合は、管理者ユーザーが以下のコマンドを実行します。
 ```
-/remove {hubot integration名}
+/remove {bot名}
 ```
 
-## Licence
+## ライセンス
 
 [Apache License, Version 2.0](https://github.com/chory-amam/slack-capybara/blob/master/LICENSE.txt)
+
+## リンク
+
+Powerd by botancore[https://github.com/masahitojp/botan-core]
 
 ## Author
 
