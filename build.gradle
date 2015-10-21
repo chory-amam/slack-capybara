@@ -1,10 +1,11 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
-apply plugin: 'war'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
 group = 'slack-capybara'
-version = '0.1.0'
+version = '1.0.0'
 
 description = """"""
 
@@ -16,28 +17,46 @@ tasks.withType(AbstractCompile)*.options*.encoding = defaultEncoding
 tasks.withType(GroovyCompile)*.groovyOptions*.encoding = defaultEncoding
 
 repositories {
-     jcenter()
-     maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
-     maven { url "http://repo.maven.apache.org/maven2" }
+    jcenter()
+    maven { url "http://repo.maven.apache.org/maven2" }
+    maven {
+        url "https://oss.sonatype.org/content/repositories/releases/"
+    }
 }
 
+configurations { testJMockit }
+
 dependencies {
-    compile 'org.atilika.kuromoji:kuromoji:0.7.7'
-    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'com.atilika.kuromoji:kuromoji-ipadic:0.9.0'
+    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile 'org.slf4j:jul-to-slf4j:1.7.7'
+
     compile 'ch.qos.logback:logback-classic:1.0.13'
     compile 'com.h2database:h2:1.3.168'
     compile 'org.jdbi:jdbi:2.43'
     compile 'com.google.guava:guava:18.0'
-    compile 'io.fastjson:boon:0.32'
-    compile 'org.yaml:snakeyaml:1.15'
-    compile 'org.eclipse.jetty:jetty-webapp:9.3.0.v20150612'
-    compile 'org.eclipse.jetty:jetty-annotations:9.3.0.v20150612'
+    compile 'org.yaml:snakeyaml:1.16'
+    compile 'com.github.masahitojp:nineteen:0.0.3'
+    compile 'com.github.masahitojp:botan-core:0.3.0.0'
+    compile 'com.github.masahitojp:botan-mapdb:0.2.0.2'
+    compile 'org.apache.httpcomponents:httpclient:4.5'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'org.jsoup:jsoup:1.7.3'
+    compile 'it.sauronsoftware.cron4j:cron4j:2.2.5'
+
+    testJMockit 'org.jmockit:jmockit:1.16'
+    testCompile configurations.testJMockit.dependencies
     testCompile 'junit:junit:4.12'
-    testCompile 'org.jmockit:jmockit:1.16'
-    testCompile 'com.ning:async-http-client:1.9.15'
 }
 
-war {
+test {
+    // jmockitがjunitよりも前にclasspathが通ってる必要があるので下記の対応を行う
+    jvmArgs "-javaagent:${configurations.testJMockit.asPath}"
+}
+
+jar {
 
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
@@ -49,4 +68,47 @@ war {
         attributes 'Implementation-Title': 'slack-capybara', 'Implementation-Version': 1.0
         attributes "Main-Class" : "Bootstrap"
     }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+    }
+}
+
+jacoco {
+    toolVersion = "0.7.4.201502262128"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
+task archive(type: Zip, dependsOn: jar) {
+    archiveName = "${baseName}_${version}.${extension}"
+    from('scripts') {
+        filter(
+                org.apache.tools.ant.filters.ReplaceTokens,
+                tokens: [
+                        'version': version
+                ]
+        )
+    }
+    into('conf') {
+        from "src/main/resources/capybara.yaml"
+    }
+    into('lib') {
+        from jar.archivePath
+    }
+}
+
+artifacts {
+    archives archive
 }

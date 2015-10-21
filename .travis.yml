@@ -1,6 +1,14 @@
+sudo: false
+
 language: java
 
 jdk:
   - oraclejdk8
 
 script: ./gradlew build
+
+notifications:
+  slack: cappybara:WgoHVe9CPwwNpPesYxu6BtJ3
+
+after_success:
+- ./gradlew jacocoTestReport coveralls

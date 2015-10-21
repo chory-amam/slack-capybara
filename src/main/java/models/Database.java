@@ -1,5 +1,6 @@
 package models;
 
+import com.google.common.base.Strings;
 import models.word.BeginWord;
 import models.word.Relation;
 import models.word.RelationQueries;
@@ -9,32 +10,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Database {
 	private static Logger log = LoggerFactory.getLogger(Database.class);
 	private static int MAX_PERIOD = 2;
 	private static int MIN_WORD_COUNT = 3;
-
+	private static AtomicReference<JdbcConnectionPool> ds = new AtomicReference<>();
 	/**
 	 * データベースの初期化
 	 */
 	public static void initialize() {
 		log.info("database initialize.");
-		final JdbcConnectionPool ds = createConnection();
-		final DBI dbi = new DBI(ds);
+
+		ds.set(createConnection());
+		final DBI dbi = new DBI(ds.get());
 
 		final RelationQueries relation = dbi.open(RelationQueries.class);
 		relation.createRelationTable();
 		relation.close();
-		log.info("table 'RelationQueries' created.");
 
 		final BeginWord beginWord = dbi.open(BeginWord.class);
 		beginWord.createBeginWordTable();
 		beginWord.close();
-		log.info("table 'begin_word' created.");
 
-		ds.dispose();
 		log.info("database initialized.");
+	}
+
+	public static void dispose() {
+		ds.get().dispose();
 	}
 
 	/**
@@ -42,33 +46,34 @@ public class Database {
 	 */
 	public static void study(final String sentence) {
 		log.info("study start. sentence: " + sentence);
-		// 。をすべて改行付の。にして、改行で分割。
-		final String[] lines = sentence.replace("/。/", "。¥n").split(" ");
-		final JdbcConnectionPool ds = createConnection();
+		final String[] lines = WordAnalyzer.splitBySpecialSymbol(sentence);
+		
 		try {
 			for (final String line : lines) {
 				// 文章を解析して、単語ごとにスペースで区切る
-				final List<String> words = WordAnalyzer.analyze(line);
-				String preWord = null;
-				int count = 1;
-				for (final String word : words) {
-					if (preWord == null) {
-						if (!isExistBeginWord(word, ds)) {
-							insertBeginWord(word, ds);
+				if (!Strings.isNullOrEmpty(line)) { // note: lineがnull,空文字の時は学習しない
+					final List<String> words = WordAnalyzer.analyze(line);
+					String preWord = null;
+					int count = 1;
+					for (final String word : words) {
+						if (count == 1) {
+							if (!isExistBeginWord(word, ds.get())) {
+								insertBeginWord(word, ds.get());
+							}
+						} else {
+							final boolean isLast = (words.size() == count);
+							if (!isExistRelation(preWord, word, isLast, ds.get())) {
+								insertRelation(preWord, word, isLast, ds.get());
+							}
 						}
-					} else {
-						final boolean isLast = (words.size() == count);
-						if (!isExistRelation(preWord, word, isLast, ds)) {
-							insertRelation(preWord, word, isLast, ds);
-						}
+						++count;
+						preWord = word;
 					}
-					++count;
-					preWord = word;
 				}
 			}
 			log.info("study end");
 		} finally {
-			ds.dispose();
+			//ds.dispose();
 		}
 	}
 
@@ -81,11 +86,10 @@ public class Database {
 		int periodCount = 0;
 		int loopCount = 0;
 
-		final JdbcConnectionPool ds = createConnection();
 		try {
 			while (true) {
 				// はじめの言葉を取得
-				words += selectBeginWord(ds);
+				words += selectBeginWord(ds.get());
 
 				String word = words;
 				// 文言が英数記号のみならスペース追加
@@ -95,7 +99,7 @@ public class Database {
 
 				int wordCount = 1;
 				for (int i = 0; i < 15; ++i) {
-					final Relation relation = selectRelation(word, ds);
+					final Relation relation = selectRelation(word, ds.get());
 					if (relation == null) {
 						periodCount += MAX_PERIOD;
 						break;
@@ -130,7 +134,7 @@ public class Database {
 				return words;
 			}
 		} finally {
-			ds.dispose();
+			//ds.dispose();
 		}
 	}
 
@@ -182,7 +186,7 @@ public class Database {
 	private static boolean isExistRelation(final String leadWord, final String followWord, final boolean isLast, final JdbcConnectionPool ds) {
 		final DBI dbi = new DBI(ds);
 		final RelationQueries relation = dbi.open(RelationQueries.class);
-		final boolean result = relation.relationCount(leadWord, followWord, isLast) > 0;
+		final boolean result = relation.relationGetOrNull(leadWord, followWord, isLast) != null;
 		relation.close();
 		return result;
 	}
