@@ -82,7 +82,7 @@ public class CronHandlers implements BotanMessageHandlers {
                             message.reply(message.getMatcher().group("message"));
                         });
                         final CronJob job =
-                                new CronJob(message.getMatcher().group("schedule"), message.getFrom(), message.getMatcher().group("message"));
+                                new CronJob(message.getMatcher().group("schedule"), message.getTo(), message.getMatcher().group("message"));
                         runningJobs.put(id, job);
                         final int jobId;
                         synchronized (lock) {
