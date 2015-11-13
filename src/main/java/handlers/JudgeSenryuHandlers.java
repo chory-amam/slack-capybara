@@ -5,6 +5,7 @@ import com.github.masahitojp.botan.handler.BotanMessageHandlers;
 import com.github.masahitojp.nineteen.Reviewer;
 import com.github.masahitojp.nineteen.Song;
 import com.github.masahitojp.nineteen.Token;
+import com.google.common.base.Strings;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,11 +26,12 @@ public class JudgeSenryuHandlers implements BotanMessageHandlers {
                 "(?<body>.+)",
                 "koko de ikku",
                 message -> {
-                    final Reviewer reviewer = new Reviewer();
-                    final Optional<Song> phrases = reviewer.find(message.getBody());
-                    if (phrases.isPresent()) {
-                        final String result = "ここで一句: " + toSenryuString(phrases);
-                        message.reply(result);
+                    final String body = message.getBody();
+                    if (!Strings.isNullOrEmpty(body)) {
+                        final String result = toSenryuString(new Reviewer().find(body));
+                        if(!Strings.isNullOrEmpty(result)) {
+                            message.reply("ここで一句: " + result);
+                        }
                     }
                 });
     }
