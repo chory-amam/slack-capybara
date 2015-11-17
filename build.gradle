@@ -36,7 +36,7 @@ dependencies {
     compile 'org.jdbi:jdbi:2.43'
     compile 'com.google.guava:guava:18.0'
     compile 'org.yaml:snakeyaml:1.16'
-    compile 'com.github.masahitojp:nineteen:0.0.4'
+    compile 'com.github.masahitojp:nineteen:0.0.5'
     compile 'com.github.masahitojp:botan-core:0.3.1.0'
     compile 'com.github.masahitojp:botan-mapdb:0.2.1.1'
     compile 'org.apache.httpcomponents:httpclient:4.5'
