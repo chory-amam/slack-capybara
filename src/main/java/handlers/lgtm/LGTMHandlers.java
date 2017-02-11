@@ -24,7 +24,7 @@ public class LGTMHandlers implements BotanMessageHandlers {
                 "fetching an image from www.lgtm.in.",
                 message -> {
                     final OkHttpClient client = new OkHttpClient();
-                    final String url = "https://www.lgtm.in/g";
+                    final String url = "http://www.lgtm.in/g";
                     final Request request = new Request.Builder()
                             .url(url)
                             .header("Accept", "application/json")
