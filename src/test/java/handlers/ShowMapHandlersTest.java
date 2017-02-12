@@ -14,13 +14,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(JMockit.class)
 public class ShowMapHandlersTest {
-    @Mocked({"getGoogleMapApiKey"
-            , "getGoogleMapLanguage"
-            , "getGoogleMapSensor"
-            , "getGoogleMapScale"
-            , "getGoogleMapZoom"
-            , "getGoogleMapSizeLength"
-            , "getGoogleMapSizeHeight"})
+
     @SuppressWarnings("unused")
     private ConfigReader reader;
 
@@ -30,8 +24,8 @@ public class ShowMapHandlersTest {
         final String expectString1 = "http://maps.googleapis.com/maps/api/staticmap?center=%E6%9D%B1%E4%BA%AC&size=500x500&scale=1&sensor=false&zoom=16&language=jp&markers=%E6%9D%B1%E4%BA%AC";
         final String inputAddress2 = "&&&";
         final String expectString2 = "http://maps.googleapis.com/maps/api/staticmap?center=%26%26%26&size=500x500&scale=1&sensor=false&zoom=16&language=jp&markers=%26%26%26";
-
-        new NonStrictExpectations() {
+        reader = ConfigReader.getInstance();
+        new NonStrictExpectations(ConfigReader.class) {
             {
                 reader.getGoogleMapApiKey();
                 result = "";

@@ -10,7 +10,13 @@ import com.squareup.okhttp.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 @SuppressWarnings("unused")
 public class LGTMHandlers implements BotanMessageHandlers {
@@ -24,14 +30,33 @@ public class LGTMHandlers implements BotanMessageHandlers {
                 "fetching an image from www.lgtm.in.",
                 message -> {
                     final OkHttpClient client = new OkHttpClient();
-                    final String url = "http://www.lgtm.in/g";
+                    final String url = "https://www.lgtm.in/g";
                     final Request request = new Request.Builder()
                             .url(url)
                             .header("Accept", "application/json")
                             .build();
 
                     try {
-                        final Response response = client.newCall(request).execute();
+                        // 自己証明書対応
+                        final TrustManager[] trustManagers = new TrustManager[]{
+                                new X509TrustManager() {
+                                    @Override
+                                    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+                                    @Override
+                                    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+                                    @Override
+                                    public X509Certificate[] getAcceptedIssuers() {return null;}
+                                }
+                        };
+                        final SSLContext sslContext = SSLContext.getInstance("SSL");
+                        sslContext.init(null, trustManagers, new java.security.SecureRandom());
+                        final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+                        // リクエスト送信
+                        final Response response = client
+                                .setSslSocketFactory(sslSocketFactory)
+                                .newCall(request)
+                                .execute();
                         if (response.isSuccessful()) {
                             final String src = response.body().string();
                             final JsonObject jsonObject = new Gson().fromJson(src, JsonObject.class);
@@ -40,7 +65,7 @@ public class LGTMHandlers implements BotanMessageHandlers {
                         } else {
                             message.reply(ERROR_PREFIX + String.format("http request failed (%d)", response.code()));
                         }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         log.warn(e.getMessage());
                         message.reply(ERROR_PREFIX + e.getMessage());
                     }
