@@ -5,7 +5,7 @@ apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
 group = 'slack-capybara'
-version = '1.0.0'
+version = '1.0.1'
 
 description = """"""
 
