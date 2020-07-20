@@ -33,7 +33,7 @@ dependencies {
 
     compile 'ch.qos.logback:logback-classic:1.0.13'
     compile 'com.h2database:h2:1.4.200'
-    compile 'org.jdbi:jdbi:2.43'
+    compile 'org.jdbi:jdbi:2.78'
     compile 'com.google.guava:guava:18.0'
     compile 'org.yaml:snakeyaml:1.16'
     compile 'com.github.masahitojp:nineteen:0.0.6'
