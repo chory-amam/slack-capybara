@@ -47,7 +47,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.13.1'
     compile 'it.sauronsoftware.cron4j:cron4j:2.2.5'
 
-    testJMockit 'org.jmockit:jmockit:1.20'
+    testJMockit 'org.jmockit:jmockit:1.49'
     testCompile configurations.testJMockit.dependencies
     testCompile 'junit:junit:4.13'
     testCompile "org.hamcrest:java-hamcrest:2.0.0.0"
