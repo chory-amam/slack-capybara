@@ -44,7 +44,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.7.5'
     compile 'com.squareup.okhttp:okhttp:2.7.5'
     compile 'com.google.code.gson:gson:2.8.6'
-    compile 'org.jsoup:jsoup:1.13.1'
+    compile 'org.jsoup:jsoup:1.14.1'
     compile 'it.sauronsoftware.cron4j:cron4j:2.2.5'
 
     testJMockit 'org.jmockit:jmockit:1.20'
